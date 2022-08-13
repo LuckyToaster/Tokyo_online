@@ -65,7 +65,7 @@ public class Client {
 		}
 	}
 	
-	public void listenForNigs() {
+	public void listen4Msg() {
 		while (s.isConnected()) {
 			try {
 
@@ -86,7 +86,6 @@ public class Client {
 					break;
 				}
 				
-
 			} catch (IOException e) {
 				closeEverything(s, r, w);
 			}
