@@ -1,5 +1,4 @@
 package refactor;
-
 import static java.lang.System.out;
 import static java.lang.Integer.parseInt;
 
@@ -19,11 +18,11 @@ public class Server {
 
 	private Dice dice;
 	private ServerSocket ss;
-	private List<Socket> sockets;
+    private List<Socket> sockets;
 	private List<Player> players;
 	private Scanner in;
 	private int lives, playerN;
-	private boolean finished;
+	private boolean freshStart, finished;
 
 	public Server(int port, int lives, int playerN) {
 		try {
@@ -62,15 +61,110 @@ public class Server {
 
 	private void startGame() {
 		boolean prevGTNow, prev21NowNot21, freshStart = false;
-		String clientMsg = null;
+		String response, clientMsg = null;
 		Iterator<Player> playersIter;
 		Iterator<Socket> socketsIter;
 		Player player; 
 		Socket socket;
 
-		out.println("Game has started");
+		out.println("Game started");
 
 		while (!finished) {
+			playersIter = players.listIterator();	
+			socketsIter = sockets.listIterator();
+
+			while (playersIter.hasNext()) {
+				player = playersIter.next();
+				socket = socketsIter.next();
+			
+				if (freshStart) {
+					send(socket, 1); // tell client this is case 1 in switch statement
+					dice.shake();
+					send(socket, printStats(player).concat(dice.getDrawing()) );
+					clientMsg = readLine(socket);
+				}
+
+				else clientMsg = readLine(socket);
+			}
+		}
+	}
+
+	
+	private void broadcast(String msg) {
+		BufferedWriter w;
+		for (Socket s : sockets) {
+			try {
+				w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+				w.write(msg);
+				w.newLine();
+				w.flush();
+			} catch (IOException e) {}
+		}
+	}
+
+
+	private void closeServerSocket() {
+		if (ss != null) 
+			try { 
+				ss.close(); 
+			} catch (IOException e) {}
+	}
+
+
+	private String printStats(Player player) {
+		return "\t🐵 ".concat(player.getName())
+			.concat("   ⏪ ")
+			.concat(dice.getPrev() + "   ")
+			.concat("😂 ")
+			.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
+			.concat(player.getLives() + " ❤️");
+	}
+
+	
+	private void send(Socket s, String msg) {
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+			w.write(msg);
+			w.newLine();
+			w.flush();
+		} catch (IOException e) {}
+	}
+	
+	private void send(Socket s, int n) {
+		BufferedWriter w = null;
+		try {
+			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+			w.write(n);
+			w.newLine();
+			w.flush();
+		} catch (IOException e) {}
+	}
+	
+
+	private String readLine(Socket s) {
+		String clientMsg = null;
+		BufferedReader r;
+		try {
+			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			clientMsg = r.readLine();
+		} catch (IOException e) {}
+		return clientMsg;
+	}
+
+
+	private void awaitKeyPress() {
+		out.print("Press Enter to start");
+		in.nextLine();
+	}
+
+
+	public static void main(String[] args) {
+		new Server(5500, 3, 3);
+	}
+	
+	/*
+	 * while (!finished) {
 			playersIter = players.listIterator();	
 			socketsIter = sockets.listIterator();
 			
@@ -130,70 +224,6 @@ public class Server {
 				}
 			}
 		}
-	}
-
-	
-	private void broadcast(String msg) {
-		BufferedWriter w;
-		for (Socket s : sockets) {
-			try {
-				w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-				w.write(msg);
-				w.newLine();
-				w.flush();
-			} catch (IOException e) {}
-		}
-	}
-
-
-	private void closeServerSocket() {
-		if (ss != null) 
-			try { 
-				ss.close(); 
-			} catch (IOException e) {}
-	}
-
-
-	private String printStats(Player player) {
-		return "\t🐵 ".concat(player.getName())
-			.concat("   ⏪ ")
-			.concat(dice.getPrev() + "   ")
-			.concat("😂 ")
-			.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
-			.concat(player.getLives() + " ❤️");
-	}
-
-	
-	private void send(Socket s, String msg) {
-		BufferedWriter w = null;
-		try {
-			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-			w.write(msg);
-			w.newLine();
-			w.flush();
-		} catch (IOException e) {}
-	}
-	
-
-	private String readLine(Socket s) {
-		String clientMsg = null;
-		BufferedReader r;
-		try {
-			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			clientMsg = r.readLine();
-		} catch (IOException e) {}
-		return clientMsg;
-	}
-
-
-	private void awaitKeyPress() {
-		out.print("Press Enter to start");
-		in.nextLine();
-	}
-
-
-	public static void main(String[] args) {
-		new Server(5500, 3, 3);
-	}
+	 */
 
 }

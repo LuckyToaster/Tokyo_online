@@ -78,8 +78,8 @@ public class Client {
 					break;
 				// normal
 				case (2):
-					out.println("🤡 " + r.read());
-					askUserValidateAnswer();
+					out.println("🤡 " + r.read()); // read prevPlayers dice
+					askUserValidateAnswer(); // send yay or nay response
 					break;
 				default:
 					closeEverything(s, r, w); // should this method be called?
@@ -114,7 +114,7 @@ public class Client {
 	
 
 	public static void main(String[] args) {
-		new Client("localhost", 5500).listenForMsg();
+		new Client("localhost", 5500).listen4Msg();
 	}
 
 }
