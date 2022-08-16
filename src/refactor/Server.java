@@ -83,6 +83,8 @@ public class Server {
 					send(socket, printStats(player).concat(dice.getDrawing()) );
 					clientMsg = readLine(socket);
 				}
+				
+				
 
 				else clientMsg = readLine(socket);
 			}
