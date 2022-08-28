@@ -37,7 +37,8 @@ public class Client {
 			try {
 				switch (r.read()) {
 					case (1): // new round
-						out.println(r.readLine());
+						for (int i = 0; i < 8; i++) 
+							out.println(r.readLine());
 						out.print("What will you say? > ");
 						sendMsg(Integer.toString(in.nextInt()));
 						break;

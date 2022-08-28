@@ -98,6 +98,9 @@ public class Server {
 					// if prev player deceitMsg is correct and current player doesn't believe
 					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n"))
 						p.loseLife();
+					
+					dice.shake();
+					send(s, printStats(p).concat(dice.getDrawing()));
 				}
 				
 				// check if player died
@@ -112,6 +115,7 @@ public class Server {
 				 * shouldn't b too hard, as this will have to be checked independently of 
 				 * whether it is a new round or not
 				 */
+
 				if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
 					// this will go back one player to remove a life
 					if (playersIter.hasPrevious() && socketsIter.hasPrevious()) {
@@ -158,7 +162,7 @@ public class Server {
 
 
 	private String printStats(Player player) {
-		return "\033[H\033[2J".concat("\t🐵 ").concat(player.getName())
+		return "\t🐵 ".concat(player.getName())
 			.concat("   ⏪ ")
 			.concat(dice.getPrev() + "   ")
 			.concat("😂 ")
