@@ -85,9 +85,11 @@ public class Dice {
 	}
 	
 
+	/*
 	public Optional<Integer> getPrev() {
 		return Optional.of(history.get(history.size()-2));
 	}
+	*/
 
 	
 	public int getHistorySize() {
@@ -95,11 +97,9 @@ public class Dice {
 	}
 	
 	
-	/*
 	public int getPrev() {
 		if (history.size() >= 2) return history.get(history.size()-2);
 		else return 0;
 	}
-	*/
 
 }

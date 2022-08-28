@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 public class Server {
@@ -61,11 +62,11 @@ public class Server {
 
 	private void startGame() {
 		boolean prevGTNow, prev21NowNot21, newRound = true;
-		String response, deceitfulMsg = null;
+		String prevDeceitfulMsg, deceitfulMsg = null;
 		Iterator<Player> playersIter;
 		Iterator<Socket> socketsIter;
-		Player player; 
-		Socket socket;
+		Player player = null, prevPlayer= null;
+		Socket socket = null, prevSocket = null;
 
 		out.println("Game started");
 
@@ -74,6 +75,12 @@ public class Server {
 			socketsIter = sockets.listIterator();
 
 			while (playersIter.hasNext()) {
+
+				if (player != null && socket != null) {
+					prevPlayer = player;
+					prevSocket = socket;
+				}
+					
 				player = playersIter.next();
 				socket = socketsIter.next();
 			
@@ -84,9 +91,33 @@ public class Server {
 					deceitfulMsg = readLine(socket);
 					newRound = false;
 				} else {
-					
-					
+					send(socket, 2); 
+
+					prevGTNow = dice.get() < dice.getPrev() ;
+					prev21NowNot21 = dice.get() != 21 && dice.getPrev() == 21;
+
+					if (prevGTNow || prev21NowNot21) {
+						broadcast(player.getName().concat(" has lost a life!"));
+						player.loseLife();
+						freshStart = true;
+					}
 				}
+				
+				// check if player died
+				if (player.getLives() == 0) {
+					broadcast("Player " + player.getName() + " dies!");
+					send(socket, "YOU DIED LOL! Here, have an 'L'");
+					playersIter.remove();
+					socketsIter.remove();
+					continue;
+				}
+				
+				/* now we have to check if prev player lied and lost a life as a result
+				 * shouldn't b too hard, as this will have to be checked independently of 
+				 * whether it is a new round or not
+				 */
+				sockets.remove(prevSocket);
+				players.remove(prevPlayer);
 
 			}
 		}
