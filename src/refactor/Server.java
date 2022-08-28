@@ -1,6 +1,6 @@
 package refactor;
-import static java.lang.System.out;
 import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -10,9 +10,8 @@ import java.io.OutputStreamWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
+import java.util.ListIterator;
 import java.util.Scanner;
 
 public class Server {
@@ -61,12 +60,12 @@ public class Server {
 
 
 	private void startGame() {
-		boolean prevGTNow, prev21NowNot21, newRound = true;
-		String prevDeceitfulMsg, deceitfulMsg = null;
-		Iterator<Player> playersIter;
-		Iterator<Socket> socketsIter;
-		Player player = null, prevPlayer= null;
-		Socket socket = null, prevSocket = null;
+		boolean prevGTNow, prev21NowNot21, newRound = true, prevPlayerFuckedUp;
+		String answer2Deceit = null, deceitMsg = null;
+		ListIterator<Player> playersIter;
+		ListIterator<Socket> socketsIter;
+		Player p = null, prevP= null;
+		Socket s = null, prevS = null;
 
 		out.println("Game started");
 
@@ -75,50 +74,63 @@ public class Server {
 			socketsIter = sockets.listIterator();
 
 			while (playersIter.hasNext()) {
-
-				if (player != null && socket != null) {
-					prevPlayer = player;
-					prevSocket = socket;
+				p = playersIter.next();
+				s = socketsIter.next();
+				
+				// check if there is a winner and end the game 
+				if (players.size() == 1) {
+					broadcast("Player " + p.getName() + " wins!");
+					finished = true;
+					break;
 				}
-					
-				player = playersIter.next();
-				socket = socketsIter.next();
 			
 				if (newRound) {
-					send(socket, 1); // tell client this is case 1 in switch statement
+					send(s, 1); // tell client this is case 1 in switch statement
 					dice.shake();
-					send(socket, printStats(player).concat(dice.getDrawing()) );
-					deceitfulMsg = readLine(socket);
+					send(s, printStats(p).concat(dice.getDrawing()) );
+					deceitMsg = readLine(s);
 					newRound = false;
 				} else {
-					send(socket, 2); 
+					send(s, 2); 
+					send(s, deceitMsg);
+					answer2Deceit = readLine(s);
 
-					prevGTNow = dice.get() < dice.getPrev() ;
-					prev21NowNot21 = dice.get() != 21 && dice.getPrev() == 21;
-
-					if (prevGTNow || prev21NowNot21) {
-						broadcast(player.getName().concat(" has lost a life!"));
-						player.loseLife();
-						freshStart = true;
-					}
+					// if prev player deceitMsg is correct and current player doesn't believe
+					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n"))
+						p.loseLife();
 				}
 				
 				// check if player died
-				if (player.getLives() == 0) {
-					broadcast("Player " + player.getName() + " dies!");
-					send(socket, "YOU DIED LOL! Here, have an 'L'");
+				if (p.getLives() == 0) {
+					broadcast("Player " + p.getName() + " dies!");
+					send(s, "YOU DIED LOL! Here, have an 'L'");
 					playersIter.remove();
 					socketsIter.remove();
-					continue;
 				}
 				
 				/* now we have to check if prev player lied and lost a life as a result
 				 * shouldn't b too hard, as this will have to be checked independently of 
 				 * whether it is a new round or not
 				 */
-				sockets.remove(prevSocket);
-				players.remove(prevPlayer);
-
+				if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
+					// this will go back one player to remove a life
+					if (playersIter.hasPrevious() && socketsIter.hasPrevious()) {
+						s = socketsIter.previous();
+						p = playersIter.previous();
+						p.loseLife();
+						broadcast(p.getName().concat(" has lost a life!"));
+						// check if this player is dead
+						if (p.getLives() == 0) {
+							broadcast("Player " + p.getName() + " dies!");
+							send(s, "YOU DIED LOL! Here, have an 'L'");
+							playersIter.remove();
+							socketsIter.remove();
+						}
+						// go back to where we were b4 in the iterators
+						s = socketsIter.next();
+						p = playersIter.next();
+					}
+				}
 			}
 		}
 	}
