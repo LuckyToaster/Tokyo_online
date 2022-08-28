@@ -167,6 +167,8 @@ public class Server {
 		new Server(5500, 3, 3);
 	}
 	
+}
+	
 	/*
 	 * while (!finished) {
 			playersIter = players.listIterator();	
@@ -230,4 +232,3 @@ public class Server {
 		}
 	 */
 
-}
