@@ -96,11 +96,14 @@ public class Server {
 					answer2Deceit = readLine(s);
 
 					// if prev player deceitMsg is correct and current player doesn't believe
-					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n"))
+					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
 						p.loseLife();
+						newRound = true;
+					}
 					
 					dice.shake();
 					send(s, printStats(p).concat(dice.getDrawing()));
+					deceitMsg = readLine(s);
 				}
 				
 				// check if player died
@@ -117,19 +120,24 @@ public class Server {
 				 */
 
 				if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
+
 					// this will go back one player to remove a life
 					if (playersIter.hasPrevious() && socketsIter.hasPrevious()) {
 						s = socketsIter.previous();
 						p = playersIter.previous();
 						p.loseLife();
 						broadcast(p.getName().concat(" has lost a life!"));
+						newRound = true;
+
 						// check if this player is dead
 						if (p.getLives() == 0) {
 							broadcast("Player " + p.getName() + " dies!");
 							send(s, "YOU DIED LOL! Here, have an 'L'");
 							playersIter.remove();
 							socketsIter.remove();
+
 						}
+
 						// go back to where we were b4 in the iterators
 						s = socketsIter.next();
 						p = playersIter.next();

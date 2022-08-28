@@ -36,18 +36,16 @@ public class Client {
 		while (s.isConnected()) {
 			try {
 				switch (r.read()) {
-					case (1): // new round
-						for (int i = 0; i < 8; i++) 
-							out.println(r.readLine());
-						out.print("What will you say? > ");
-						sendMsg(Integer.toString(in.nextInt()));
-						break;
-					case (2): // normal
-						out.println("🤡 " + r.read()); // read prevPlayers dice
-						askUserValidateAnswer(); // send yay or nay response
-						break;
-					default: 
-						break;
+				case (1): // new round
+					readFromServerAndSendResponse();
+					break;
+				case (2): // normal
+					out.println("🤡 " + r.read()); 
+					askUserValidateAnswer(); 
+					readFromServerAndSendResponse();
+					break;
+				default: 
+					break;
 				}
 			} catch (IOException e) {
 				closeEverything(s, r, w);
@@ -73,6 +71,13 @@ public class Client {
 			if (w != null) w.close();
 			if (s != null) s.close();
 		} catch (IOException e) {}
+	}
+	
+	private void readFromServerAndSendResponse() throws IOException {
+		for(int i = -1; ++i < 8;) 
+			out.println(r.readLine());
+		out.print("What will you say? > ");
+		sendMsg(Integer.toString(in.nextInt()));
 	}
 
 
@@ -107,6 +112,11 @@ public class Client {
 		sendMsg(in.next().trim());
 	}
 	
+	
+	private void times(int n, Runnable r) {
+		for (int i = 0; i < n; i++) r.run();
+	}
+
 	
 	public static void main(String[] args) {
 		new Client("localhost", 5500);
