@@ -1,7 +1,5 @@
 package refactor;
 
-import static java.lang.System.out;
-
 public class Player {
 	
 	private String name;

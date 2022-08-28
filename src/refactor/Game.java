@@ -6,11 +6,6 @@ import static java.lang.Integer.parseInt;
 
 public class Game {
 	
-	private Server server;
-	
-	public Game() {
-	}
-	
 	public void askUserConnectOrHostLoop() {
 		Scanner in = new Scanner(System.in);
 		int answer;
@@ -24,5 +19,15 @@ public class Game {
 		in.close();
 	}
 	
+	public static void main(String[] args) {
+		for (int i = 0; i < 5; i++) {
+			System.out.print("\033[H\033[2J");  
+			System.out.flush();
+			System.out.println(i);
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {}
+		}
+	}
 
 }

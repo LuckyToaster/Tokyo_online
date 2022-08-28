@@ -60,8 +60,8 @@ public class Server {
 
 
 	private void startGame() {
-		boolean prevGTNow, prev21NowNot21, freshStart = false;
-		String response, clientMsg = null;
+		boolean prevGTNow, prev21NowNot21, newRound = true;
+		String response, deceitfulMsg = null;
 		Iterator<Player> playersIter;
 		Iterator<Socket> socketsIter;
 		Player player; 
@@ -77,16 +77,17 @@ public class Server {
 				player = playersIter.next();
 				socket = socketsIter.next();
 			
-				if (freshStart) {
+				if (newRound) {
 					send(socket, 1); // tell client this is case 1 in switch statement
 					dice.shake();
 					send(socket, printStats(player).concat(dice.getDrawing()) );
-					clientMsg = readLine(socket);
+					deceitfulMsg = readLine(socket);
+					newRound = false;
+				} else {
+					
+					
 				}
-				
-				
 
-				else clientMsg = readLine(socket);
 			}
 		}
 	}
@@ -114,7 +115,7 @@ public class Server {
 
 
 	private String printStats(Player player) {
-		return "\t🐵 ".concat(player.getName())
+		return "\033[H\033[2J".concat("\t🐵 ").concat(player.getName())
 			.concat("   ⏪ ")
 			.concat(dice.getPrev() + "   ")
 			.concat("😂 ")
@@ -132,6 +133,7 @@ public class Server {
 			w.flush();
 		} catch (IOException e) {}
 	}
+
 	
 	private void send(Socket s, int n) {
 		BufferedWriter w = null;
