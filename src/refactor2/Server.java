@@ -21,19 +21,26 @@ public class Server {
 	private ServerSocket ss;
 	private List<Socket> sockets;
 	private List<Player> players;
+	private ListIterator<Player> playersIter;
+	private ListIterator<Socket> socketsIter;
 	private Scanner in;
 	private int lives, playerN;
-	private boolean freshStart, finished;
+	private String deceitMsg, answer2Deceit;
+	private boolean newRound, finished;
+	private Player p;
+	private Socket s; 
 
 	public Server(int port, int lives, int playerN) {
 		try {
 			ss = new ServerSocket(port);
-		} catch (IOException e) {
-		}
+		} catch (IOException e) {}
 
 		this.lives = lives;
 		this.playerN = playerN;
 
+		deceitMsg = null; 
+		answer2Deceit = null;
+		newRound = true;
 		finished = false;
 		dice = new Dice();
 		in = new Scanner(System.in);
@@ -44,6 +51,7 @@ public class Server {
 		awaitKeyPress();
 		startGame();
 	}
+
 
 	private void awaitUserConnections() {
 		BufferedReader r;
@@ -60,14 +68,8 @@ public class Server {
 		}
 	}
 
-	private void startGame() {
-		String answer2Deceit = null, deceitMsg = null;
-		ListIterator<Player> playersIter;
-		ListIterator<Socket> socketsIter;
-		boolean newRound = true;
-		Player p;
-		Socket s; 
 
+	private void startGame() {
 		out.println("Game started");
 
 		while (!finished) {
@@ -78,73 +80,20 @@ public class Server {
 				p = playersIter.next();
 				s = socketsIter.next();
 
-				// check if there is a winner and end the game
-				if (players.size() == 1) {
-					broadcast("Player " + p.getName() + " wins!");
-					finished = true;
-					break;
-				}
+				if (finished = checkIfWinner(p)) break;
 
 				if (newRound) {
 					send(s, 1); // tell client this is case 1 in switch statement
-					dice.shake();
-					send(s, printStats(p).concat(dice.getDrawing()));
-					deceitMsg = readLine(s);
+					doTheUsual(s, p);
 					newRound = false;
 				} else {
 					send(s, 2);
 					send(s, deceitMsg);
 					answer2Deceit = readLine(s);
-
-					// this player loses life bc assumed lie but it was true
-					// if prev player deceitMsg is correct and current player doesn't believe
-					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
-						p.loseLife();
-						newRound = true;
-					}
-
-					dice.shake();
-					send(s, printStats(p).concat(dice.getDrawing()));
-					deceitMsg = readLine(s);
-
-					/*
-					 * now we have to check if prev player lied and lost a life as a result
-					 * shouldn't b too hard, as this will have to be checked independently of
-					 * whether it is a new round or not
-					 */
-					if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
-
-						// this will go back one player to remove a life
-						if (playersIter.hasPrevious() && socketsIter.hasPrevious()) {
-							s = socketsIter.previous();
-							p = playersIter.previous();
-							p.loseLife();
-							broadcast(p.getName().concat(" has lost a life!"));
-							newRound = true;
-
-							// check if this player is dead
-							if (p.getLives() == 0) {
-								broadcast("Player " + p.getName() + " dies!");
-								send(s, "YOU DIED LOL! Here, have an 'L'");
-								playersIter.remove();
-								socketsIter.remove();
-							}
-
-							// go back to where we were b4 in the iterators
-							s = socketsIter.next();
-							p = playersIter.next();
-						}
-					}
-				}
-
-				// check if player died
-				if (p.getLives() == 0) {
-					broadcast("Player " + p.getName() + " dies!");
-					send(s, "YOU DIED LOL! Here, have an 'L'");
-					playersIter.remove();
-					socketsIter.remove();
-				}
-
+					newRound = prevSincereCurrentSkeptical(p);
+					doTheUsual(s, p);
+					newRound = prevLiedCurrentSkeptical(p, playersIter, socketsIter);
+				} handleIfDead(p, playersIter, socketsIter);
 			}
 		}
 	}
@@ -160,24 +109,6 @@ public class Server {
 				w.flush();
 			} catch (IOException e) {}
 		}
-	}
-
-
-	private void closeServerSocket() {
-		if (ss != null)
-			try {
-				ss.close();
-			} catch (IOException e) {}
-	}
-
-
-	private String printStats(Player player) {
-		return "\t🐵 ".concat(player.getName())
-				.concat("   ⏪ ")
-				.concat(dice.getPrev() + "   ")
-				.concat("😂 ")
-				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
-				.concat(player.getLives() + " ❤️");
 	}
 
 
@@ -204,13 +135,88 @@ public class Server {
 
 
 	private String readLine(Socket s) {
-		String clientMsg = null;
+		String msg = null;
 		BufferedReader r;
 		try {
 			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			clientMsg = r.readLine();
+			msg = r.readLine();
 		} catch (IOException e) {}
-		return clientMsg;
+		return msg;
+	}
+	
+	
+	private void closeServerSocket() {
+		if (ss != null)
+			try {
+				ss.close();
+			} catch (IOException e) {}
+	}
+
+
+	private String printStats(Player player) {
+		return "\t🐵 ".concat(player.getName())
+				.concat("   ⏪ ")
+				.concat(dice.getPrev() + "   ")
+				.concat("😂 ")
+				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
+				.concat(player.getLives() + " ❤️");
+	}
+
+
+	private void doTheUsual(Socket s, Player p) {
+		dice.shake();
+		send(s, printStats(p).concat(dice.getDrawing()));
+		deceitMsg = readLine(s);
+	}
+	
+	
+	private boolean prevSincereCurrentSkeptical(Player p) {
+		if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
+			p.loseLife();
+			return true;
+		} else return false;
+	}
+	
+	
+	// this also checks and handles if the player has died 
+	private boolean prevLiedCurrentSkeptical(Player p, ListIterator<Player> players, ListIterator<Socket> sockets) {
+		if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
+			if (playersIter.hasPrevious() && socketsIter.hasPrevious()) {
+				s = socketsIter.previous();
+				p = playersIter.previous();
+
+				p.loseLife();
+				broadcast(p.getName().concat(" has lost a life!"));
+
+				if (p.getLives() == 0) {
+					broadcast("Player " + p.getName() + " dies!");
+					send(s, "YOU DIED LOL! Here, have an 'L'");
+					playersIter.remove();
+					socketsIter.remove();
+				}
+
+				s = socketsIter.next();
+				p = playersIter.next();
+			} return true;
+		} else return false;
+	}
+	
+	
+	private boolean checkIfWinner(Player p) {
+		if (players.size() == 1) {
+			broadcast("Player " + p.getName() + " wins!");
+			return true;
+		} else return false; 	
+	}
+
+	
+	private void handleIfDead(Player p, ListIterator<Player> players, ListIterator<Socket> sockets) {
+		if (p.getLives() == 0) {
+			broadcast("Player " + p.getName() + " dies!");
+			send(s, "YOU DIED LOL! Here, have an 'L'");
+			players.remove();
+			sockets.remove();
+		}
 	}
 
 
