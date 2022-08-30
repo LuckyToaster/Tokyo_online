@@ -1,4 +1,4 @@
-package refactor;
+package refactor2;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -40,7 +40,7 @@ public class Client {
 					readFromServerAndSendResponse();
 					break;
 				case (2): 
-					out.println("🤡 " + r.readLine());  
+					out.println("🤡 ".concat(r.readLine()));
 					askUserValidateAnswer();
 					readFromServerAndSendResponse();
 					break;
@@ -103,16 +103,3 @@ public class Client {
 	}
 
 }
-
-/*
- * public void listenForMsg() { String serverMsg; while (s.isConnected()) { try
- * {
- * 
- * // print dice drawing serverMsg = r.readLine(); out.println(serverMsg);
- * 
- * if (serverMsg.length() <= 5) askUserValidateAnswer();
- * 
- * out.print("What will you say? > "); sendMsg(Integer.toString(in.nextInt()));
- * 
- * } catch (IOException e) { closeEverything(s, r, w); } } }
- */

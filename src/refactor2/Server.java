@@ -1,4 +1,4 @@
-package refactor;
+package refactor2;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
