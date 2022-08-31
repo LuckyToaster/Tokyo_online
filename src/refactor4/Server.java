@@ -15,11 +15,11 @@ import java.util.Scanner;
 
 public class Server {
 	
-	private Dice dice;
+	private refactor4.Dice dice;
 	private ServerSocket ss;
 	private DataInputStream r;
 	private DataOutputStream w;
-	private List<Player> players;
+	private List<refactor4.Player> players;
 	private ListIterator<Player> playersIter;
 	private String deceitMsg, answer2Deceit;
 
@@ -40,7 +40,7 @@ public class Server {
 
 	
 	private void gameLoop() throws IOException {
-		boolean newRound = true;
+		boolean newRound = true, firstOneToDie = true;
 		Player p;
 
 		while (players.size() > 1) {
@@ -52,8 +52,9 @@ public class Server {
 				// check for winner
 				if (players.size() == 1) {
 					send(p.s, 3);
-					send(p.s, "YOU WIN, CONGRATS!");
-					broadcast(p.name.concat(" WINS !!"));
+					send(p.s, "YOU WON, CONGRATS! 🍀✨🎉🎉");
+					broadcast(3);
+					broadcast(p.name + " WINS! 🗿 ");
 					p.s.close();
 				}
 				
@@ -65,7 +66,7 @@ public class Server {
 					newRound = false;
 				} else {
 					send(p.s, 2);
-					send(p.s, deceitMsg);
+					send(p.s, "🤡 " + deceitMsg);
 					answer2Deceit = readUTF(p.s);
 					
 					// handle prev sincere current skeptical
@@ -75,42 +76,49 @@ public class Server {
 						dice.clearHistory();
 					}
 					
+					// if current got a bad number and accidentally told the truth
+					if (parseInt(deceitMsg) == dice.get() && dice.get() < dice.getPrev()) {
+						p.lives -= 1;
+						newRound = true;
+						dice.clearHistory();
+					}
+						
+					
 					dice.shake();
 					send(p.s, printStats(p) + dice.getDrawing());
 					deceitMsg = readUTF(p.s);
-
-					/* after case 2, case 3 in case we wanna send extra info
-					 * like someone lost a life or to broadcast a death
-					 */
-					broadcast(3);
-					broadcast(p.name + " " + p.lives + " lives remaining");
-					
 					
 					// prev lied current skeptical
 					if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
 						if (playersIter.hasPrevious()) {
 							p = playersIter.previous();
-
 							p.lives -= 1;
-							broadcast(p.name + " " + p.lives + " lives remaining");
 
 							if (p.lives == 0) {
-								broadcast("Player " + p.name + " dies!");
-								send(p.s, "YOU DIED LOL! Here, have an 'L'");
+								broadcast(3);
+								broadcast("Player " + p.name + " died!");
+								send(p.s, 3);
+								send(p.s, "YOU DIED 🤣 ... Here, have an 'L'");
 								p.s.close();
 								playersIter.remove();
 							}
-							p = playersIter.next();
+							//p = playersIter.next();
 						}
 					}
+					
 					
 					// handle if dead
 					if (p.lives == 0) {
 						broadcast(3);
 						broadcast("Player " + p.name + " died");
-
-						send(p.s, 3);
-						send(p.s, "YOU DIED LOL! Here, have an 'L'");
+						if (firstOneToDie) {
+							send(p.s, 3);
+							send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
+							firstOneToDie = false;
+						} else {
+							send(p.s, 3);
+							send(p.s, "YOU DIED LOL! Here, have an 'L'");
+						}
 
 						p.s.close();
 						playersIter.remove();
