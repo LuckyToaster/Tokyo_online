@@ -40,7 +40,7 @@ public class Client {
 					readFromServerAndSendResponse();
 					break;
 				case (2): 
-					out.println("🤡 ".concat(r.readLine()));
+					out.println(readLine());
 					askUserValidateAnswer();
 					readFromServerAndSendResponse();
 					break;
@@ -63,6 +63,16 @@ public class Client {
 			closeEverything(s, r, w);
 		}
 	}
+	
+	
+	private String readLine() {
+		String line = null;
+			try {
+				while ((line = r.readLine()) != null);
+					return line;
+			} catch (IOException e) {}
+		return line;
+	}
 
 
 	private void closeEverything(Socket s, BufferedReader r, BufferedWriter w) {
@@ -75,8 +85,7 @@ public class Client {
 
 
 	private void readFromServerAndSendResponse() throws IOException {
-		for (int i = -1; ++i < 8;) 
-			out.println(r.readLine());
+		out.println(readLine());
 		out.print("What will you say? > ");
 		send(in.next());
 	}

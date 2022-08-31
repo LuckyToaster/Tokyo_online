@@ -76,14 +76,14 @@ public class Server {
 			playersIter = players.listIterator();
 			socketsIter = sockets.listIterator();
 
-			while (playersIter.hasNext()) {
+			while (playersIter.hasNext() && socketsIter.hasNext()) {
 				p = playersIter.next();
 				s = socketsIter.next();
 
 				if (finished = checkIfWinner(p)) break;
 
 				if (newRound) {
-					send(s, 1); // tell client this is case 1 in switch statement
+					send(s, 1); 
 					doTheUsual(s, p);
 					newRound = false;
 				} else {
@@ -139,7 +139,8 @@ public class Server {
 		BufferedReader r;
 		try {
 			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			msg = r.readLine();
+			while ((msg = r.readLine()) != null)
+				return msg;
 		} catch (IOException e) {}
 		return msg;
 	}
@@ -165,7 +166,7 @@ public class Server {
 
 	private void doTheUsual(Socket s, Player p) {
 		dice.shake();
-		send(s, printStats(p).concat(dice.getDrawing()));
+		send(s, printStats(p));
 		deceitMsg = readLine(s);
 	}
 	

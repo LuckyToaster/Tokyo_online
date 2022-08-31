@@ -27,15 +27,27 @@ public class Client {
 		}
 		
 		getUsername();
-		beServersBitch();
+		listen2Server();
 		in.close();
 	}
 	
 	
-	private void beServersBitch() {
-		while (s.isConnected())
-			out.println(readLine());
-		out.println("YOU DIED LOL!");
+	private void listen2Server() {
+		while (s.isConnected()) {
+			switch (readInt()) {
+			case 1:
+				readFromServerAndSendResponse();
+				break;
+			case 2:
+				out.println(readLine());
+				send(getValidatedAnswer());
+				readFromServerAndSendResponse();
+				break;
+			default:
+				break;
+			}
+		}
+		out.println("YOU ARE DEAD, here have an 'L'!");
 	}
 
 	
@@ -53,10 +65,20 @@ public class Client {
 	private String readLine() {
 		String line = null;
 			try {
-				while ((line = r.readLine()) != null);
-					return line;
+				//while ((line = r.readLine()) != null);
+				line =  r.readLine();
 			} catch (IOException e) {}
 		return line;
+	}
+
+	
+	private int readInt() {
+		int n = 0;
+		try {
+			//while ((n = r.read()) != 0)
+			n = r.read();;
+		} catch (IOException e) {}
+		return n;
 	}
 
 		
@@ -76,6 +98,21 @@ public class Client {
 		send(in.next().trim());
 	}
 	
+	
+	private void readFromServerAndSendResponse() {
+		out.println(readLine());
+		out.print("What'd you get? > ");
+		send(in.next());
+	}
+
+	private String getValidatedAnswer() {
+		String msg = null;
+		out.print("Yay or Nay? (y/n) > ");
+		do msg = in.next().trim().toLowerCase();
+		while (!msg.equals("y") || !msg.equals("n"));
+		return msg;
+	}
+
 
 	public static void main(String[] args) {
 		new Client("localhost", 5500);
