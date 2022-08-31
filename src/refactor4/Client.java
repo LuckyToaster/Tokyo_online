@@ -51,7 +51,7 @@ public class Client {
 				do msg = in.next().trim().toLowerCase();
 				while (!msg.equals("y") && !msg.equals("n"));
 
-				send(in.next());
+				send(msg);
 
 				out.println(readUTF());
 				out.print("What'd you get? > ");

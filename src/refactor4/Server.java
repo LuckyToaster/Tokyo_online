@@ -85,6 +85,25 @@ public class Server {
 					broadcast(3);
 					broadcast(p.name + " " + p.lives + " lives remaining");
 					
+					
+					// prev lied current skeptical
+					if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
+						if (playersIter.hasPrevious()) {
+							p = playersIter.previous();
+
+							p.lives -= 1;
+							broadcast(p.name + " " + p.lives + " lives remaining");
+
+							if (p.lives == 0) {
+								broadcast("Player " + p.name + " dies!");
+								send(p.s, "YOU DIED LOL! Here, have an 'L'");
+								p.s.close();
+								playersIter.remove();
+							}
+							p = playersIter.next();
+						}
+					}
+					
 					// handle if dead
 					if (p.lives == 0) {
 						broadcast(3);
@@ -195,7 +214,7 @@ public class Server {
 	
 	
 	public static void main(String[] args) {
-		Server server = new Server(5500, 3, 3);
+		Server server = new Server(5500, 2, 2);
 	}
 
 }
