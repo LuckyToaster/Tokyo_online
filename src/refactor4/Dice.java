@@ -83,17 +83,15 @@ public class Dice {
 	public int get() {
 		return value;
 	}
-	
-
-	/*
-	public Optional<Integer> getPrev() {
-		return Optional.of(history.get(history.size()-2));
-	}
-	*/
 
 	
 	public int historySize() {
 		return history.size();
+	}
+	
+	
+	public void clearHistory() {
+		history.clear();
 	}
 	
 	

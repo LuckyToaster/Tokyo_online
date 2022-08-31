@@ -46,10 +46,10 @@ public class Client {
 			case 2:
 				out.println(readUTF());
 
-				//String msg = null;
+				String msg = null;
 				out.print("Yay or Nay? (y/n) > ");
-				//do msg = in.next().trim().toLowerCase();
-				//while (!msg.equals("y") || !msg.equals("n"));
+				do msg = in.next().trim().toLowerCase();
+				while (!msg.equals("y") && !msg.equals("n"));
 
 				send(in.next());
 

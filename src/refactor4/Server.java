@@ -72,6 +72,7 @@ public class Server {
 					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
 						p.lives -= 1;
 						newRound = true;
+						dice.clearHistory();
 					}
 					
 					dice.shake();
