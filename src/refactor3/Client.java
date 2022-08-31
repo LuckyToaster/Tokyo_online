@@ -1,8 +1,11 @@
 package refactor3;
 
 import static java.lang.System.out;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -12,16 +15,16 @@ import java.util.Scanner;
 public class Client {
 
 	private Socket s;
-	private BufferedWriter w;
-	private BufferedReader r;
+	private DataOutputStream w;
+	private DataInputStream r;
 	private Scanner in;
 	
 	public Client(String host, int port) {
 		in = new Scanner(System.in);
 		try {
 			s = new Socket(host, port);
-			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			w = new DataOutputStream(s.getOutputStream());
+			r = new DataInputStream(s.getInputStream());
 		} catch (IOException e) {
 			closeEverything(s, r, w);
 		}
@@ -53,8 +56,7 @@ public class Client {
 	
 	private void send(String msg) {
 		try {
-			w.write(msg);
-			w.newLine();
+			w.writeUTF(msg);
 			w.flush();
 		} catch (IOException e) {
 			closeEverything(s, r, w);
@@ -66,7 +68,7 @@ public class Client {
 		String line = null;
 			try {
 				//while ((line = r.readLine()) != null);
-				line =  r.readLine();
+				line =  r.readUTF();
 			} catch (IOException e) {}
 		return line;
 	}
@@ -76,13 +78,13 @@ public class Client {
 		int n = 0;
 		try {
 			//while ((n = r.read()) != 0)
-			n = r.read();;
+			n = r.read();
 		} catch (IOException e) {}
 		return n;
 	}
 
 		
-	private void closeEverything(Socket s, BufferedReader r, BufferedWriter w) {
+	private void closeEverything(Socket s, DataInputStream r, DataOutputStream w) {
 		try {
 			if (r != null) r.close();
 			if (w != null) w.close();

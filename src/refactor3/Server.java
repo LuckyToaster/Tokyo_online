@@ -1,9 +1,12 @@
 package refactor3;
 
-import static java.lang.System.out;
 import static java.lang.Integer.parseInt;
+import static java.lang.System.out;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
@@ -24,7 +27,8 @@ public class Server {
 	private List<Player> players;
 	private Socket s;
 	private Player p;
-	private BufferedReader r;
+	private DataInputStream r;
+	private DataOutputStream w;
 	private String deceitMsg, answer2Deceit;
 	private boolean newRound;
 
@@ -76,8 +80,8 @@ public class Server {
 			for (int i = 0; i < connections; i++) {
 				sockets.add(ss.accept());
 				s = sockets.get(sockets.size() - 1);
-				r = new BufferedReader(new InputStreamReader(s.getInputStream()));
-				players.add(new Player(r.readLine(), lives));
+				r = new DataInputStream(s.getInputStream());
+				players.add(new Player(r.readUTF(), lives));
 			}
 		} catch (IOException e) {
 			closeServerSocket();
@@ -95,22 +99,18 @@ public class Server {
 
 
 	private void send(Socket s, String msg) {
-		BufferedWriter w = null;
 		try {
-			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-			w.write(msg);
-			w.newLine();
+			w = new DataOutputStream(s.getOutputStream());
+			w.writeUTF(msg);
 			w.flush();
 		} catch (IOException e) {}
 	}
 	
 	
 	private void send(Socket s, int n) {
-		BufferedWriter w = null;
 		try {
-			w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
+			w = new DataOutputStream(s.getOutputStream());
 			w.write(n);
-			w.newLine();
 			w.flush();
 		} catch (IOException e) {}
 	}
@@ -118,12 +118,10 @@ public class Server {
 
 	// how about broadcast to all except for one 
 	private void broadcast(String msg) {
-		BufferedWriter w;
 		for (Socket s : sockets) {
 			try {
-				w = new BufferedWriter(new OutputStreamWriter(s.getOutputStream()));
-				w.write(msg);
-				w.newLine();
+				w = new DataOutputStream(s.getOutputStream());
+				w.writeUTF(msg);
 				w.flush();
 			} catch (IOException e) {}
 		}
@@ -132,11 +130,10 @@ public class Server {
 
 	private String readLine(Socket s) {
 		String msg = null;
-		BufferedReader r;
 		try {
-			r = new BufferedReader(new InputStreamReader(s.getInputStream()));
+			r = new DataInputStream(s.getInputStream());
 			//while ((msg = r.readLine()) != null)
-			msg = r.readLine();
+			msg = r.readUTF();
 		} catch (IOException e) {}
 		return msg;
 	}
@@ -162,7 +159,7 @@ public class Server {
 	
 	private void throwDiceSendStatsGetResponse(Socket s, Player p) {
 		dice.shake();
-		send(s, printStats(p));
+		send(s, printStats(p) + dice.getDrawing());
 		deceitMsg = readLine(s);
 	}
 	
