@@ -227,7 +227,7 @@ public class Server {
 
 
 	public static void main(String[] args) {
-		new Server(5500, 3, 3);
+		new Server(5500, 3, 2);
 	}
 
 
