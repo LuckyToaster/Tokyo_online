@@ -15,23 +15,17 @@ import java.util.Scanner;
 
 public class Server {
 	
-	private refactor4.Dice dice;
-	private ServerSocket ss;
-	private DataInputStream r;
-	private DataOutputStream w;
-	private List<refactor4.Player> players;
+	private Dice dice;
+	private ServerHandler handler;
+	private List<Player> players;
 	private ListIterator<Player> playersIter;
 	private String deceitMsg, answer2Deceit;
 
 	public Server(int port, int connections, int lives) {
-		try {
-			ss = new ServerSocket(port);
-		} catch (IOException e) {}
-		
-		players = new ArrayList<>();
+		handler = new ServerHandler(port);
+		players = handler.awaitConnections(connections, lives);
 		dice = new Dice();
-		
-		awaitUserConnections(connections, lives);
+
 		awaitKeyPress();
 		try {
 			gameLoop();
@@ -51,24 +45,24 @@ public class Server {
 			
 				// check for winner
 				if (players.size() == 1) {
-					send(p.s, 3);
-					send(p.s, "YOU WON, CONGRATS! 🍀✨🎉🎉");
-					broadcast(3);
-					broadcast(p.name + " WINS! 🗿 ");
+					handler.send(p.s, 3);
+					handler.send(p.s, "YOU WON, CONGRATS! 🍀✨🎉🎉");
+					handler.broadcast(players, 3);
+					handler.broadcast(players, p.name + " WINS! 🗿 ");
 					p.s.close();
 					break;
 				}
 				
 				if (newRound) {
 					dice.shake();
-					send(p.s, 1);
-					send(p.s, printStats(p) + dice.getDrawing());
-					deceitMsg = readUTF(p.s);
+					handler.send(p.s, 1);
+					handler.send(p.s, printStats(p) + dice.getDrawing());
+					deceitMsg = handler.read(p.s);
 					newRound = false;
 				} else {
-					send(p.s, 2);
-					send(p.s, "🤡 " + deceitMsg);
-					answer2Deceit = readUTF(p.s);
+					handler.send(p.s, 2);
+					handler.send(p.s, "🤡 " + deceitMsg);
+					answer2Deceit = handler.read(p.s);
 					
 					// handle prev sincere current skeptical
 					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
@@ -86,8 +80,8 @@ public class Server {
 						
 					
 					dice.shake();
-					send(p.s, printStats(p) + dice.getDrawing());
-					deceitMsg = readUTF(p.s);
+					handler.send(p.s, printStats(p) + dice.getDrawing());
+					deceitMsg = handler.read(p.s);
 					
 					// prev lied current skeptical
 					if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
@@ -97,37 +91,36 @@ public class Server {
 
 							if (p.lives == 0) {
 								if (firstOneToDie) {
-									broadcast(3);
-									broadcast("Player " + p.name + " died");
-									send(p.s, 3);
-									send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
+									handler.broadcast(players, 3);
+									handler.broadcast(players, "Player " + p.name + " died");
+									handler.send(p.s, 3);
+									handler.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
 									firstOneToDie = false;
 								} else {
-									broadcast(3);
-									broadcast("Player " + p.name + " died");
-									send(p.s, 3);
-									send(p.s, "YOU DIED LOL! Here, have an 'L'");
+									handler.broadcast(players, 3);
+									handler.broadcast(players, "Player " + p.name + " died");
+									handler.send(p.s, 3);
+									handler.send(p.s, "YOU DIED LOL! Here, have an 'L'");
 								}
 								p.s.close();
 								playersIter.remove();
 							}
 						}
-					}
+					} else 
 					
-					
-					// handle if dead
-					if (p.lives == 0) {
+
+					if (p.lives == 0) { // handle if dead
 						if (firstOneToDie) {
-							broadcast(3);
-							broadcast("Player " + p.name + " died");
-							send(p.s, 3);
-							send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
+							handler.broadcast(players, 3);
+							handler.broadcast(players, "Player " + p.name + " died");
+							handler.send(p.s, 3);
+							handler.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
 							firstOneToDie = false;
 						} else {
-							broadcast(3);
-							broadcast("Player " + p.name + " died");
-							send(p.s, 3);
-							send(p.s, "YOU DIED LOL! Here, have an 'L'");
+							handler.broadcast(players, 3);
+							handler.broadcast(players, "Player " + p.name + " died");
+							handler.send(p.s, 3);
+							handler.send(p.s, "YOU DIED LOL! Here, have an 'L'");
 						}
 
 						p.s.close();
@@ -137,80 +130,6 @@ public class Server {
 			}
 		}
 	} 
-	
-	
-	private void broadcast(String msg) {
-		for (Player p : players) {
-			try {
-				w = new DataOutputStream(p.s.getOutputStream());
-				w.writeUTF(msg);
-				w.flush();
-			} catch (IOException e) {}
-		}
-	}
-	
-	
-	private void broadcast(int n) {
-		for (Player p : players) {
-			try {
-				w = new DataOutputStream(p.s.getOutputStream());
-				w.writeInt(n);
-				w.flush();
-			} catch (IOException e) {}
-		}
-	}
-	
-	
-	private void send(Socket s, String msg) {
-		try {
-			w = new DataOutputStream(s.getOutputStream());
-			w.writeUTF(msg);
-			w.flush();
-		} catch (IOException e) {}
-	}
-	
-	
-	private void send(Socket s, int n) {
-		try {
-			w = new DataOutputStream(s.getOutputStream());
-			w.write(n);
-			w.flush();
-		} catch (IOException e) {}
-	}
-	
-	
-	private String readUTF(Socket s) {
-		String msg = null;
-		try {
-			r = new DataInputStream(s.getInputStream());
-			msg = r.readUTF();
-		} catch (IOException e) {}
-		return msg;
-	}
-	
-	
-	private void closeServerSocket() {
-		if (ss != null) 
-			try {
-				ss.close();
-			} catch (IOException e) { 
-				closeServerSocket();
-			}
-	}
-
-	
-	private void awaitUserConnections(int connections, int lives) {
-		Socket s;
-		try {
-			for (int i = 0; i < connections; i++) {
-				s = ss.accept();
-				r = new DataInputStream(s.getInputStream());
-				players.add(new Player(s, r.readUTF(), lives));
-			}
-		} catch (IOException e) {
-			closeServerSocket();
-		}
-	}
 
 	
 	private void awaitKeyPress() {
