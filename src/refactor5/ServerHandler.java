@@ -3,8 +3,10 @@ package refactor5;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -103,6 +105,15 @@ public class ServerHandler {
 			} catch (IOException e) { 
 				closeServerSocket();
 			}
+	}
+	
+	public String getIP() {
+		String IP = null;
+		try {
+			IP = InetAddress.getLocalHost().getHostName();
+		} catch (UnknownHostException e) {
+			e.printStackTrace();
+		} return IP;
 	}
 
 }

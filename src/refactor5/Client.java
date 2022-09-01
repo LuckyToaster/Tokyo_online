@@ -29,7 +29,7 @@ public class Client {
 				ch.send(in.next());
 				break;
 			case 2:
-				out.println(ch.read());
+				out.println("\t".concat(ch.read()));
 
 				String msg = null;
 				do {

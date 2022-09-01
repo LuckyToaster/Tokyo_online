@@ -48,11 +48,6 @@ public class Server {
 
 			while (playersIter.hasNext() && !finished) {
 				p = playersIter.next();
-			
-				if (players.size() == 1) {
-					handleWinner(p);
-					break;
-				}
 				
 				if (newRound) {
 					sh.send(p.s, 1);
@@ -64,15 +59,9 @@ public class Server {
 
 					if (prevSincereAndLuckyCurrentSus() || currentMessedUp()) {
 						loseLife(p);
-
 						if (p.lives == 0) 
 							handleDeath(p, players, playersIter);
-					}
-
-					throwDiceSendStatsGetResponse(p);
-
-					// might wanna chain with prev if
-					if (prevLiedOrUnluckyCurrentSus()) {
+					} else if (prevLiedOrUnluckyCurrentSus()) {
 						if (playersIter.hasPrevious()) {
 							p = playersIter.previous();
 							loseLife(p);
@@ -80,6 +69,8 @@ public class Server {
 							p = playersIter.next();
 						}
 					}
+
+					throwDiceSendStatsGetResponse(p);
 
 					if (players.size() == 1) {
 						handleWinner(p);
