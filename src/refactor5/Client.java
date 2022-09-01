@@ -25,7 +25,7 @@ public class Client {
 			switch (ch.readInt()) {
 			case 1:
 				out.println(ch.read());
-				out.print("What'd you get? > ");
+				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
 				break;
 			case 2:
@@ -33,14 +33,14 @@ public class Client {
 
 				String msg = null;
 				do {
-					out.print("Yay or Nay? (y/n) > ");
+					out.print("\tYay or Nay? (y/n) > ");
 					msg = in.next().trim().toLowerCase();
 				} while (!msg.equals("y") && !msg.equals("n"));
 
 				ch.send(msg);
 
 				out.println(ch.read());
-				out.print("What'd you get? > ");
+				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
 				break;
 			case 3:

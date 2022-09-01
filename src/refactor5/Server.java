@@ -16,122 +16,160 @@ import java.util.Scanner;
 public class Server {
 	
 	private Dice dice;
-	private ServerHandler handler;
+	private ServerHandler sh;
 	private List<Player> players;
 	private ListIterator<Player> playersIter;
-	private String deceitMsg, answer2Deceit;
+	private String deceitMsg, answer;
+	private boolean newRound, firstDeath, finished;
 
 	public Server(int port, int connections, int lives) {
-		handler = new ServerHandler(port);
-		players = handler.awaitConnections(connections, lives);
+		sh = new ServerHandler(port);
+		players = sh.awaitConnections(connections, lives);
 		dice = new Dice();
+
+		newRound = true;
+		firstDeath = true;
+		finished = false;
 
 		awaitKeyPress();
 		try {
 			gameLoop();
-		} catch (IOException e) {}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	
 	private void gameLoop() throws IOException {
-		boolean newRound = true, firstOneToDie = true;
 		Player p;
 
-		while (players.size() > 1) {
+		while (players.size() > 1 && !finished) {
 			playersIter = players.listIterator();
 
-			while (playersIter.hasNext()) {
+			while (playersIter.hasNext() && !finished) {
 				p = playersIter.next();
 			
-				// check for winner
 				if (players.size() == 1) {
-					handler.send(p.s, 3);
-					handler.send(p.s, "YOU WON, CONGRATS! 🍀✨🎉🎉");
-					handler.broadcast(players, 3);
-					handler.broadcast(players, p.name + " WINS! 🗿 ");
-					p.s.close();
+					handleWinner(p);
 					break;
 				}
 				
 				if (newRound) {
-					dice.shake();
-					handler.send(p.s, 1);
-					handler.send(p.s, printStats(p) + dice.getDrawing());
-					deceitMsg = handler.read(p.s);
+					sh.send(p.s, 1);
+					throwDiceSendStatsGetResponse(p);
 					newRound = false;
 				} else {
-					handler.send(p.s, 2);
-					handler.send(p.s, "🤡 " + deceitMsg);
-					answer2Deceit = handler.read(p.s);
-					
-					// handle prev sincere current skeptical
-					if (parseInt(deceitMsg) == dice.get() && answer2Deceit.equals("n")) {
-						p.lives -= 1;
-						newRound = true;
-						dice.clearHistory();
+					sh.send(p.s, 2);
+					sendDeceitMsgGetAnswer(p);
+
+					if (prevSincereAndLuckyCurrentSus() || currentMessedUp()) {
+						loseLife(p);
+
+						if (p.lives == 0) 
+							handleDeath(p, players, playersIter);
 					}
-					
-					// if current got a bad number and accidentally told the truth
-					if (parseInt(deceitMsg) == dice.get() && dice.get() < dice.getPrev()) {
-						p.lives -= 1;
-						newRound = true;
-						dice.clearHistory();
-					}
-						
-					
-					dice.shake();
-					handler.send(p.s, printStats(p) + dice.getDrawing());
-					deceitMsg = handler.read(p.s);
-					
-					// prev lied current skeptical
-					if (parseInt(deceitMsg) != dice.getPrev() && answer2Deceit.equals("n")) {
+
+					throwDiceSendStatsGetResponse(p);
+
+					// might wanna chain with prev if
+					if (prevLiedOrUnluckyCurrentSus()) {
 						if (playersIter.hasPrevious()) {
 							p = playersIter.previous();
-							p.lives -= 1;
-
-							if (p.lives == 0) {
-								if (firstOneToDie) {
-									handler.broadcast(players, 3);
-									handler.broadcast(players, "Player " + p.name + " died");
-									handler.send(p.s, 3);
-									handler.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
-									firstOneToDie = false;
-								} else {
-									handler.broadcast(players, 3);
-									handler.broadcast(players, "Player " + p.name + " died");
-									handler.send(p.s, 3);
-									handler.send(p.s, "YOU DIED LOL! Here, have an 'L'");
-								}
-								p.s.close();
-								playersIter.remove();
-							}
+							loseLife(p);
+							if (p.lives == 0) handleDeath(p, players, playersIter);
+							p = playersIter.next();
 						}
-					} else 
-					
+					}
 
-					if (p.lives == 0) { // handle if dead
-						if (firstOneToDie) {
-							handler.broadcast(players, 3);
-							handler.broadcast(players, "Player " + p.name + " died");
-							handler.send(p.s, 3);
-							handler.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
-							firstOneToDie = false;
-						} else {
-							handler.broadcast(players, 3);
-							handler.broadcast(players, "Player " + p.name + " died");
-							handler.send(p.s, 3);
-							handler.send(p.s, "YOU DIED LOL! Here, have an 'L'");
-						}
-
-						p.s.close();
-						playersIter.remove();
+					if (players.size() == 1) {
+						handleWinner(p);
+						break;
 					}
 				}
 			}
 		}
 	} 
+	
+	
+	private void throwDiceSendStatsGetResponse(Player p) {
+		dice.shake();
+		sh.send(p.s, printStats(p) + dice.getDrawing());
+		this.deceitMsg = sh.read(p.s);
+	}
+	
+	
+	private void sendDeceitMsgGetAnswer(Player p) {
+		sh.send(p.s, "🤡 " + deceitMsg);
+		this.answer = sh.read(p.s);
+	}
+	
+
+	private void loseLife(Player p) {
+		p.lives -= 1;
+		this.newRound = true;
+		dice.clearHistory();
+	}
+	
+	
+	private boolean prevSincereAndLuckyCurrentSus() {
+		boolean didNotLie = parseInt(deceitMsg) == dice.get(),
+		lucky = dice.getVal() >= dice.getPrevVal(),
+		currentSus = answer.equals("n");
+
+		return didNotLie && lucky && currentSus;
+	}
+	
+	
+	private boolean prevLiedOrUnluckyCurrentSus() {
+		boolean lied = parseInt(deceitMsg) != dice.get(),
+		unlucky = dice.getVal() < dice.getPrevVal(),
+		currentSus = answer.equals("n");
+
+		return (lied || unlucky) && currentSus;
+	}
+	
+	
+	private boolean currentMessedUp() {
+		// add out of range, not a number ... etc
+		return parseInt(deceitMsg) < dice.getPrev();
+	}
 
 	
+	private void handleDeath(Player p, List<Player> players, ListIterator<Player> iter) {
+		if (firstDeath) {
+			sh.broadcast(players, 3);
+			sh.broadcast(players, "Player " + p.name + " died");
+			sh.send(p.s, 3);
+			sh.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
+			firstDeath = false;
+		} else {
+			sh.broadcast(players, 3);
+			sh.broadcast(players, "Player " + p.name + " died");
+			sh.send(p.s, 3);
+			sh.send(p.s, "YOU DIED LOL! Here, have an 'L'");
+		}
+
+		try {
+			p.s.close();
+		} catch (IOException e) {}
+
+		iter.remove(); 
+	}
+	
+
+	private void handleWinner(Player p) {
+		sh.send(p.s, 3);
+		sh.send(p.s, "YOU WON, CONGRATS! 🍀✨🎉🎉");
+		sh.broadcast(players, 3);
+		sh.broadcast(players, p.name + " WINS! 🗿 ");
+		try {
+			p.s.close();
+		} catch (IOException e) {}
+		
+		finished = true;
+	}
+
+
 	private void awaitKeyPress() {
 		Scanner in = new Scanner(System.in);
 		out.println("Press enter to start");
