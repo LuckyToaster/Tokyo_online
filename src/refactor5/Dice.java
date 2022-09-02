@@ -86,7 +86,7 @@ public class Dice {
 
 
 	public int getPrev() {
-		if (history.size() >= 2) return history.get(history.size()-2);
+		if (history.size() > 1) return history.get(history.size()-2);
 		else return 0;
 	}
 	
