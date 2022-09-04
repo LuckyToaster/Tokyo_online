@@ -59,8 +59,6 @@ public class Server {
 
 					if (prevSincereAndLuckyCurrentSus() || currentMessedUp()) {
 						loseLife(p);
-						if (p.lives == 0) 
-							handleDeath(p, players, playersIter);
 					} else if (prevLiedOrUnluckyCurrentSus()) {
 						if (playersIter.hasPrevious()) {
 							p = playersIter.previous();
@@ -69,6 +67,13 @@ public class Server {
 							p = playersIter.next();
 						}
 					}
+					
+					/* check if current was deceived and set the result of dice
+					*  to the deceitMsg 
+					*/
+
+					if (p.lives == 0) 
+						handleDeath(p, players, playersIter);
 
 					throwDiceSendStatsGetResponse(p);
 
