@@ -122,7 +122,14 @@ public class Server {
 	
 	private boolean currentMessedUp() {
 		// add out of range, not a number ... etc
-		return parseInt(deceitMsg) < dice.getPrev();
+		return parseInt(deceitMsg) < dice.getPrevVal();
+	}
+	
+	
+	private boolean currentDeceived() {
+		if ((parseInt(deceitMsg) != dice.get()) && answer.equals("y")) 
+			return true;
+		else return false;
 	}
 
 	
@@ -131,7 +138,7 @@ public class Server {
 			sh.broadcast(players, 3);
 			sh.broadcast(players, "Player " + p.name + " died");
 			sh.send(p.s, 3);
-			sh.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈");
+			sh.send(p.s, "FIRST ONE TO DIE,\n 🌈LGBT PRIDE 🏳️‍🌈🏳️‍🌈"); // this should be on client side
 			firstDeath = false;
 		} else {
 			sh.broadcast(players, 3);
@@ -172,7 +179,7 @@ public class Server {
 	private String printStats(Player player) {
 		return "\t🐵 ".concat(player.name)
 				.concat("   ⏪ ")
-				.concat(dice.getPrev() + "   ")
+				.concat(dice.prev() + "   ")
 				.concat("😂 ")
 				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
 				.concat(player.lives + " ❤️");

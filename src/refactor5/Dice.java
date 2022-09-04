@@ -16,8 +16,8 @@ public class Dice {
 	
 	private final String[] ASCII;
 	private List<Integer> history;
+	private int result;
 	private int[] dice;
-	private int value;
 	
 	public Dice() {
 		history = new ArrayList<>();
@@ -34,19 +34,17 @@ public class Dice {
 
 	
 	/**
-	 * Throws or shakes two dice.
-	 * Sets the value of {@code dice} and {@code value} to the value of the 
-	 * newly thrown dice, and adds that value to {@code history} ArrayList
-	 * @return void
+	 * Interpret the result of the dice and store it
+	 * 
 	 */
 	public void shake() {
 		dice = new int[]{throwDie(), throwDie()};
 
 		if (dice[0] >= dice[1])
-			value = parseInt(valueOf(dice[0]) + valueOf(dice[1]));
-		else value = parseInt(valueOf(dice[1]) + valueOf(dice[0]));
+			result = parseInt(valueOf(dice[0]) + valueOf(dice[1]));
+		else result = parseInt(valueOf(dice[1]) + valueOf(dice[0]));
 
-		history.add(value);
+		history.add(result);
 	}
 
 	
@@ -56,6 +54,7 @@ public class Dice {
 		BufferedReader d1, d2;
 
 		try {
+			// buffreader is best suited??
 			d1 = new BufferedReader(new StringReader(diceArt[0]));
 			d2 = new BufferedReader(new StringReader(diceArt[1]));
 		
@@ -70,8 +69,8 @@ public class Dice {
 	}
 	
 	
-	private int throwDie() {
-		return (int) (1 + random() * 6);
+	public static int throwDie() {
+		return (int) (random() * 7); 
 	}
 	
 	
@@ -81,21 +80,26 @@ public class Dice {
 
 
 	public int get() {
-		return value;
+		return result;
 	}
 
 
-	public int getPrev() {
-		if (history.size() > 1) return history.get(history.size()-2);
+	public int prev() {
+		if (history.size() > 1) 
+			return history.get(history.size()-2);
 		else return 0;
 	}
 	
+	
+	/**
+	 * @return the in-game value
+	 */
 	public int getVal() {
-		return calcVal(value);
+		return calcVal(result);
 	}
 	
 	public int getPrevVal() {
-		return calcVal(getPrev());
+		return calcVal(prev());
 	}
 
 
@@ -109,6 +113,9 @@ public class Dice {
 	}
 	
 	
+	/**
+	 * Tokyo throws hierarchy
+	 */
 	private int calcVal(int n) {
 		switch(n) {
 		case (21):
@@ -158,4 +165,9 @@ public class Dice {
 		}
 	}
 
+	public static void main(String[] args) {
+		for (int i = 0; i < 100; i++)
+			System.out.println(throwDie());
+			
+	}
 }
