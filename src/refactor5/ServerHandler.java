@@ -106,14 +106,5 @@ public class ServerHandler {
 				closeServerSocket();
 			}
 	}
-	
-	public String getIP() {
-		String IP = null;
-		try {
-			IP = InetAddress.getLocalHost().getHostName();
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} return IP;
-	}
 
 }

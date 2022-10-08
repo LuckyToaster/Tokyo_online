@@ -31,7 +31,7 @@ public class Client {
 				out.println(ch.read());
 				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
-				clearScreen();
+				GameUtils.clearScreen();
 				break;
 			case 2:
 				out.println("\t".concat(ch.read()));
@@ -48,7 +48,7 @@ public class Client {
 				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
 
-				clearScreen();
+				GameUtils.clearScreen();
 				break;
 			case 3:
 				out.println(ch.read());
@@ -64,15 +64,6 @@ public class Client {
 		out.print("Enter a username: ");
 		ch.send(in.next().trim());
 	}
-	
-	
-	private void clearScreen() {
-		try {
-			if (os.contains("Windows")) Runtime.getRuntime().exec("cls");
-			else Runtime.getRuntime().exec("clear");
-		} catch (IOException e) {}
-	}
-
 	
 	public static void main(String[] args) {
 		new Client("localhost", 5500);
