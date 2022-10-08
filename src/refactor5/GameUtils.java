@@ -8,12 +8,14 @@ public class GameUtils {
 	
 	public static String os = System.getProperty("os.name");
 	
-	public static void clearScreen() {
+	public static void clear() {
 		String os = System.getProperty("os.name");
 		try {
-			if (os.contains("Windows")) Runtime.getRuntime().exec("cls");
-			else Runtime.getRuntime().exec("clear");
-		} catch (IOException e) {
+			if (os.contains("Windows"))
+				new ProcessBuilder("cls.exe").inheritIO().start().waitFor();
+			else new ProcessBuilder("clear").inheritIO().start().waitFor();
+			//Runtime.getRuntime().exec("clear");
+		} catch (IOException | InterruptedException e) {
 			e.printStackTrace();
 		}
 	}

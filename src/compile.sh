@@ -1,7 +1,5 @@
 #!/bin/bash
 
-cd /mnt/c/Users/sench/eclipse-workspace/Tokyo/src/refactor4
-javac *.java
+cd /mnt/c/Users/sench/eclipse-workspace/Tokyo/src\refactor5
+javac -encoding "utf-8" *.java
 cd ..
-fg 
-command java refactor4.Server

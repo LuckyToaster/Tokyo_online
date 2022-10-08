@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class Dice {
 	
@@ -70,7 +69,7 @@ public class Dice {
 	
 	
 	public static int throwDie() {
-		return (int) (random() * 7); 
+		return (int) ( 1 + random() * 6); 
 	}
 	
 	

@@ -2,7 +2,6 @@ package refactor5;
 
 import static java.lang.System.out;
 
-import java.io.IOException;
 import java.util.Scanner;
 
 
@@ -10,12 +9,10 @@ public class Client {
 	
 	private ClientHandler ch;
 	private Scanner in;
-	private String os;
 	
 	public Client(String host, int port) {
 		in = new Scanner(System.in);
 		ch = new ClientHandler(host, port);
-		os = System.getProperty("os.name");
 
 		getUsername();
 		talkToServer();
@@ -31,7 +28,6 @@ public class Client {
 				out.println(ch.read());
 				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
-				GameUtils.clearScreen();
 				break;
 			case 2:
 				out.println("\t".concat(ch.read()));
@@ -48,7 +44,6 @@ public class Client {
 				out.print("\tWhat'd you get? > ");
 				ch.send(in.next());
 
-				GameUtils.clearScreen();
 				break;
 			case 3:
 				out.println(ch.read());
@@ -64,6 +59,12 @@ public class Client {
 		out.print("Enter a username: ");
 		ch.send(in.next().trim());
 	}
+	
+	
+	public boolean isConnected() {
+		return ch.isConnected();
+	}
+	
 	
 	public static void main(String[] args) {
 		new Client("localhost", 5500);

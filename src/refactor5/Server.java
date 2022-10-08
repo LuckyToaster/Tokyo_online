@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
-public class Server {
+public class Server implements Runnable {
 	
 	private Dice dice;
 	private ServerHandler sh;
@@ -193,6 +193,13 @@ public class Server {
 	
 	public static void main(String[] args) {
 		Server server = new Server(5500, 2, 2);
+	}
+
+
+	@Override
+	public void run() {
+		// TODO Auto-generated method stub
+		
 	}
 
 }
