@@ -20,6 +20,7 @@ public class Client {
 		in.close();
 	}
 	
+
 	
 	private void talkToServer() {
 		while (ch.isConnected()) {
