@@ -51,9 +51,7 @@ public class Dice {
 		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
 		String l1, l2, finalArt = "\n\n"; 
 		BufferedReader d1, d2;
-
 		try {
-			// buffreader is best suited??
 			d1 = new BufferedReader(new StringReader(diceArt[0]));
 			d2 = new BufferedReader(new StringReader(diceArt[1]));
 		
@@ -96,6 +94,7 @@ public class Dice {
 	public int getVal() {
 		return calcVal(result);
 	}
+
 	
 	public int getPrevVal() {
 		return calcVal(prev());
@@ -117,56 +116,29 @@ public class Dice {
 	 */
 	private int calcVal(int n) {
 		switch(n) {
-		case (21):
-			return 21;
-		case (66):
-			return 20;
-		case (55):
-			return 19;
-		case (44):
-			return 18;
-		case (33):
-			return 17;
-		case (22):
-			return 16;
-		case (11):
-			return 15;
-		case (65):
-			return 14;
-		case (64):
-			return 13;
-		case (63):
-			return 12;
-		case (62):
-			return 11;
-		case (61):
-			return 10;
-		case (54):
-			return 9;
-		case (53):
-			return 8;
-		case (52):
-			return 7;
-		case (51):
-			return 6;
-		case (43):
-			return 5;
-		case (42):
-			return 4;
-		case (41):
-			return 3;
-		case (32):
-			return 2;
-		case (31):
-			return 1;
-		default:
-			return 0;
+		case (21): return 21;
+		case (66): return 20;
+		case (55): return 19;
+		case (44): return 18;
+		case (33): return 17;
+		case (22): return 16;
+		case (11): return 15;
+		case (65): return 14;
+		case (64): return 13;
+		case (63): return 12;
+		case (62): return 11;
+		case (61): return 10;
+		case (54): return 9;
+		case (53): return 8;
+		case (52): return 7;
+		case (51): return 6;
+		case (43): return 5;
+		case (42): return 4;
+		case (41): return 3;
+		case (32): return 2;
+		case (31): return 1;
+		default: return 0;
 		}
 	}
 
-	public static void main(String[] args) {
-		for (int i = 0; i < 100; i++)
-			System.out.println(throwDie());
-			
-	}
 }

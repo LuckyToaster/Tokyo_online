@@ -1,7 +1,6 @@
 package refactor5;
 
 import static java.lang.System.out;
-
 import java.util.Scanner;
 
 
@@ -10,11 +9,12 @@ public class Client {
 	private ClientHandler ch;
 	private Scanner in;
 	
-	public Client(String host, int port) {
+	public Client(String host, int port, String username) {
 		in = new Scanner(System.in);
 		ch = new ClientHandler(host, port);
 
-		getUsername();
+		ch.send(username);
+
 		talkToServer();
 		ch.closeBridges();
 		in.close();
@@ -55,19 +55,13 @@ public class Client {
 	}
 	
 	
-	private void getUsername() {
-		out.print("Enter a username: ");
-		ch.send(in.next().trim());
-	}
-	
-	
 	public boolean isConnected() {
 		return ch.isConnected();
 	}
 	
 	
 	public static void main(String[] args) {
-		new Client("localhost", 5500);
+
 	}
 
 }

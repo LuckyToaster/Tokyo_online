@@ -3,12 +3,7 @@ package refactor5;
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -22,6 +17,7 @@ public class Server implements Runnable {
 	private String deceitMsg, answer;
 	private boolean newRound, firstDeath, finished;
 
+
 	public Server(int port, int connections, int lives) {
 		sh = new ServerHandler(port);
 		players = sh.awaitConnections(connections, lives);
@@ -31,7 +27,7 @@ public class Server implements Runnable {
 		firstDeath = true;
 		finished = false;
 
-		awaitKeyPress();
+		//awaitKeyPress();
 		try {
 			gameLoop();
 		} catch (IOException e) {
