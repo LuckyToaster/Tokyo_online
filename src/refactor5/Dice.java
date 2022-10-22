@@ -9,6 +9,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class Dice {
@@ -110,6 +111,10 @@ public class Dice {
 		history.clear();
 	}
 	
+	public static boolean validateNumber(int num) {
+		Integer[] validNums = {21,66,55,44,33,22,22,11,65,64,63,62,61,54,53,52,51,43,42,41,32,31};
+		return Arrays.asList(validNums).contains(num);
+	}
 	
 	/**
 	 * Tokyo throws hierarchy
@@ -140,5 +145,5 @@ public class Dice {
 		default: return 0;
 		}
 	}
-
+	
 }
