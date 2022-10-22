@@ -1,6 +1,4 @@
-package refactor6;
-
-import static java.lang.System.err;
+package old;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -69,7 +67,7 @@ public class ServerHandler {
 				w.writeUTF(msg);
 				w.flush();
 			} catch (IOException e) {
-				closeServerSocket();
+				broadcast(players, msg);
 			}
 		}
 	}
@@ -87,7 +85,7 @@ public class ServerHandler {
 				w.writeInt(n);
 				w.flush();
 			} catch (IOException e) {
-				closeServerSocket();
+				broadcast(players, n);
 			}
 		}
 	}
@@ -101,7 +99,7 @@ public class ServerHandler {
 			w.writeUTF(msg);
 			w.flush();
 		} catch (IOException e) {
-			closeServerSocket();
+			send(s, msg);
 		}
 	}
 	
@@ -114,10 +112,13 @@ public class ServerHandler {
 			w.write(n);
 			w.flush();
 		} catch (IOException e) {
-			closeServerSocket();
+			send(s, n);
 		}
 	}
 	
+	/*
+	 * Read a message from a socket
+	 */
 	public String read(Socket s) {
 		String msg = null;
 		try {
@@ -127,12 +128,15 @@ public class ServerHandler {
 		return msg;
 	}
 	
+	/*
+	 * close the ServerSocket
+	 */
 	public void closeServerSocket() {
 		if (ss != null) 
 			try {
 				ss.close();
-			} catch (IOException e) {
-				err.println("The server can't even kill itself");
+			} catch (IOException e) { 
+				closeServerSocket();
 			}
 	}
 

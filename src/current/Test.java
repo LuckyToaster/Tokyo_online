@@ -1,4 +1,4 @@
-package refactor6;
+package current;
 
 public class Test {
 

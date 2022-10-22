@@ -1,4 +1,4 @@
-package refactor6;
+package old;
 
 import static java.lang.System.out;
 import java.util.Scanner;

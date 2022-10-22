@@ -1,4 +1,4 @@
-package refactor5;
+package old;
 
 import static java.lang.Integer.parseInt;
 import static java.lang.System.out;
@@ -139,7 +139,7 @@ public class Server implements Runnable {
 			sh.broadcast(players, 3);
 			sh.broadcast(players, "Player " + p.name + " died");
 			sh.send(p.s, 3);
-			sh.send(p.s, "FIRST ONE TO DIE,\n ğŸŒˆLGBT PRIDE ğŸ³ï¸â€ğŸŒˆğŸ³ï¸â€ğŸŒˆ"); // this should be on client side
+			sh.send(p.s, "FIRST ONE TO DIE,\n ğŸŒˆLGBT PRIDE ğŸ?³ï¸?â€?ğŸŒˆğŸ?³ï¸?â€?ğŸŒˆ"); // this should be on client side
 			firstDeath = false;
 		} else {
 			sh.broadcast(players, 3);
@@ -158,7 +158,7 @@ public class Server implements Runnable {
 
 	private void handleWinner(Player p) {
 		sh.send(p.s, 3);
-		sh.send(p.s, "YOU WON, CONGRATS! ğŸ€âœ¨ğŸ‰ğŸ‰");
+		sh.send(p.s, "YOU WON, CONGRATS! ğŸ?€âœ¨ğŸ‰ğŸ‰");
 		sh.broadcast(players, 3);
 		sh.broadcast(players, p.name + " WINS! ğŸ—¿ ");
 		try {
@@ -178,12 +178,12 @@ public class Server implements Runnable {
 	
 	
 	private String printStats(Player player) {
-		return "\tğŸµ ".concat(player.name)
-				.concat("   âª ")
+		return "\tğŸ?µ ".concat(player.name)
+				.concat("   â?ª ")
 				.concat(dice.prev() + "   ")
 				.concat("ğŸ˜‚ ")
 				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
-				.concat(player.lives + " â¤ï¸");
+				.concat(player.lives + " â?¤ï¸?");
 	}
 	
 	
