@@ -27,16 +27,18 @@ public class Server implements Runnable {
 		firstDeath = true;
 		finished = false;
 
-		//awaitKeyPress();
+		/*
+		awaitKeyPress();
 		try {
 			gameLoop();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		*/
 	}
 
 	
-	private void gameLoop() throws IOException {
+	public void gameLoop() throws IOException {
 		Player p;
 
 		while (players.size() > 1 && !finished) {
@@ -83,27 +85,27 @@ public class Server implements Runnable {
 	} 
 	
 	
-	private void throwDiceSendStatsGetResponse(Player p) {
+	public void throwDiceSendStatsGetResponse(Player p) {
 		dice.shake();
 		sh.send(p.s, printStats(p) + dice.getDrawing());
 		this.deceitMsg = sh.read(p.s);
 	}
 	
 	
-	private void sendDeceitMsgGetAnswer(Player p) {
+	public void sendDeceitMsgGetAnswer(Player p) {
 		sh.send(p.s, "🤡 " + deceitMsg);
 		this.answer = sh.read(p.s);
 	}
 	
 
-	private void loseLife(Player p) {
+	public void loseLife(Player p) {
 		p.lives -= 1;
 		this.newRound = true;
 		dice.clearHistory();
 	}
 	
 	
-	private boolean prevSincereAndLuckyCurrentSus() {
+	public boolean prevSincereAndLuckyCurrentSus() {
 		boolean didNotLie = parseInt(deceitMsg) == dice.get(),
 		lucky = dice.getVal() >= dice.getPrevVal(),
 		currentSus = answer.equals("n");
@@ -112,7 +114,7 @@ public class Server implements Runnable {
 	}
 	
 	
-	private boolean prevLiedOrUnluckyCurrentSus() {
+	public boolean prevLiedOrUnluckyCurrentSus() {
 		boolean lied = parseInt(deceitMsg) != dice.get(),
 		unlucky = dice.getVal() < dice.getPrevVal(),
 		currentSus = answer.equals("n");
@@ -121,20 +123,20 @@ public class Server implements Runnable {
 	}
 	
 	
-	private boolean currentMessedUp() {
+	public boolean currentMessedUp() {
 		// add out of range, not a number ... etc
 		return parseInt(deceitMsg) < dice.getPrevVal();
 	}
 	
 	
-	private boolean currentDeceived() {
+	public boolean currentDeceived() {
 		if ((parseInt(deceitMsg) != dice.get()) && answer.equals("y")) 
 			return true;
 		else return false;
 	}
 
 	
-	private void handleDeath(Player p, List<Player> players, ListIterator<Player> iter) {
+	public void handleDeath(Player p, List<Player> players, ListIterator<Player> iter) {
 		if (firstDeath) {
 			sh.broadcast(players, 3);
 			sh.broadcast(players, "Player " + p.name + " died");
@@ -156,7 +158,7 @@ public class Server implements Runnable {
 	}
 	
 
-	private void handleWinner(Player p) {
+	public void handleWinner(Player p) {
 		sh.send(p.s, 3);
 		sh.send(p.s, "YOU WON, CONGRATS! �?�✨🎉🎉");
 		sh.broadcast(players, 3);
@@ -169,7 +171,7 @@ public class Server implements Runnable {
 	}
 
 
-	private void awaitKeyPress() {
+	public void awaitKeyPress() {
 		Scanner in = new Scanner(System.in);
 		out.println("Press enter to start");
 		in.nextLine();
@@ -177,7 +179,7 @@ public class Server implements Runnable {
 	}
 	
 	
-	private String printStats(Player player) {
+	public String printStats(Player player) {
 		return "\t�?� ".concat(player.name)
 				.concat("   �?� ")
 				.concat(dice.prev() + "   ")

@@ -6,7 +6,7 @@ import java.util.Scanner;
 
 public class Client {
 	
-	private ClientHandler ch;
+	public ClientHandler ch;
 	private Scanner in;
 	
 	public Client(String host, int port, String username) {
@@ -15,14 +15,14 @@ public class Client {
 
 		ch.send(username);
 
-		talkToServer();
-		ch.closeBridges();
-		in.close();
+		//talkToServer();
+		//ch.closeBridges();
+		//in.close();
 	}
 	
 
 	
-	private void talkToServer() {
+	public void talkToServer() {
 		while (ch.isConnected()) {
 			switch (ch.readInt()) {
 			case 1:
@@ -58,11 +58,6 @@ public class Client {
 	
 	public boolean isConnected() {
 		return ch.isConnected();
-	}
-	
-	
-	public static void main(String[] args) {
-
 	}
 
 }
