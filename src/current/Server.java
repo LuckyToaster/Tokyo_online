@@ -139,7 +139,7 @@ public class Server implements Runnable {
 			sh.broadcast(players, 3);
 			sh.broadcast(players, "Player " + p.name + " died");
 			sh.send(p.s, 3);
-			sh.send(p.s, "FIRST ONE TO DIE,\n ðŸŒˆLGBT PRIDE ðŸ?³ï¸?â€?ðŸŒˆðŸ?³ï¸?â€?ðŸŒˆ"); // this should be on client side
+			sh.send(p.s, "FIRST ONE TO DIE,\n ðŸŒˆLGBT PRIDE ï¿½?ï¿½ï¿½?ï¿½?ðŸŒˆï¿½?ï¿½ï¿½?ï¿½?ðŸŒˆ"); // this should be on client side
 			firstDeath = false;
 		} else {
 			sh.broadcast(players, 3);
@@ -158,7 +158,7 @@ public class Server implements Runnable {
 
 	private void handleWinner(Player p) {
 		sh.send(p.s, 3);
-		sh.send(p.s, "YOU WON, CONGRATS! ðŸ?€âœ¨ðŸŽ‰ðŸŽ‰");
+		sh.send(p.s, "YOU WON, CONGRATS! ï¿½?ï¿½âœ¨ðŸŽ‰ðŸŽ‰");
 		sh.broadcast(players, 3);
 		sh.broadcast(players, p.name + " WINS! ðŸ—¿ ");
 		try {
@@ -178,12 +178,12 @@ public class Server implements Runnable {
 	
 	
 	private String printStats(Player player) {
-		return "\tðŸ?µ ".concat(player.name)
-				.concat("   â?ª ")
+		return "\tï¿½?ï¿½ ".concat(player.name)
+				.concat("   ï¿½?ï¿½ ")
 				.concat(dice.prev() + "   ")
 				.concat("ðŸ˜‚ ")
 				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
-				.concat(player.lives + " â?¤ï¸?");
+				.concat(player.lives + " ï¿½?ï¿½ï¿½?");
 	}
 	
 	
