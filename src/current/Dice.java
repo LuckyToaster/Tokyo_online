@@ -23,12 +23,12 @@ public class Dice {
 		history = new ArrayList<>();
 		dice = new int[2];
 		this.ASCII = new String[] {
-			"-------\n|     |\n|  �?  |\n|     |\n-------",
-			"-------\n| �?   |\n|     |\n|   �? |\n-------",
-			"-------\n| �?   |\n|  �?  |\n|   �? |\n-------",
-			"-------\n| �? �? |\n|     |\n| �? �? |\n-------",
-			"-------\n| �? �? |\n|  �?  |\n| �? �? |\n-------",
-			"-------\n| �? �? |\n| �? �? |\n| �? �? |\n-------"
+			"-------\n|     |\n|  •  |\n|     |\n-------",
+			"-------\n| •   |\n|     |\n|   • |\n-------",
+			"-------\n| •   |\n|  •  |\n|   • |\n-------",
+			"-------\n| • • |\n|     |\n| • • |\n-------",
+			"-------\n| • • |\n|  •  |\n| • • |\n-------",
+			"-------\n| • • |\n| • • |\n| • • |\n-------"
 		};
 	}
 
@@ -50,14 +50,14 @@ public class Dice {
 	
 	public String getDrawing() {
 		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
-		String l1, l2, finalArt = "\n\n"; 
+		String l1, l2, finalArt = "\n"; 
 		BufferedReader d1, d2;
 		try {
 			d1 = new BufferedReader(new StringReader(diceArt[0]));
 			d2 = new BufferedReader(new StringReader(diceArt[1]));
 		
 			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
-				finalArt += "\t\t".concat(l1).concat("\t").concat(l2).concat("\n");
+				finalArt += "\t\t".concat(l1).concat("   ").concat(l2).concat("\n");
 
 			d1.close(); 
 			d2.close();
@@ -139,6 +139,14 @@ public class Dice {
 		case (31): return 1;
 		default: return 0;
 		}
+	}
+	
+	
+	public static void main(String[] args) {
+		Dice dice = new Dice();
+		dice.shake();
+		System.out.println(dice.getDrawing());
+		
 	}
 	
 }

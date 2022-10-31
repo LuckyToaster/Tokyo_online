@@ -95,7 +95,7 @@ public class OfflineGame {
 	
 	
 	private void printStats(Player player) {
-		out.println( "🐵 ".concat(player.name)
+		out.println( "\n\n\t🐵 ".concat(player.name)
 				.concat("⏪ ")
 				.concat(dice.getPrev() + "   ")
 				.concat("")
@@ -112,5 +112,7 @@ public class OfflineGame {
 	
 	public static void main(String[] args) {
 		OfflineGame game = new OfflineGame();
+		//System.out.println("😂");
 	}
+	
 }
