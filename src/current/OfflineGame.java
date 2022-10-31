@@ -111,8 +111,6 @@ public class OfflineGame {
 
 	
 	public static void main(String[] args) {
-		//OfflineGame game = new OfflineGame();
-		System.out.println("🐵 , ⏪ , 東京 TOKYO 東京,  ❤️");
-		System.out.println(Util.FUNNY + " " +  Util.HEART + " " +  Util.PREV);
+		OfflineGame game = new OfflineGame();
 	}
 }
