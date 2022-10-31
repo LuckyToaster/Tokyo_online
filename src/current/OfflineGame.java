@@ -7,6 +7,11 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
 
+import static current.Util.clearScreen;
+import static current.Util.userPrompt;
+import static current.Util.getStr;
+import static current.Util.hasDuplicates;
+import static current.Util.*;
 
 public class OfflineGame {
 	
@@ -29,7 +34,7 @@ public class OfflineGame {
 	 */
 	private void configure() {
 		int playerN = 0, lives = 0;
-		Util.clearScreen();
+		clearScreen();
 
 		try {
 			out.print("\n\n\tEnter number of players: ");
@@ -37,14 +42,14 @@ public class OfflineGame {
 			out.print("\tEnter number of lives: ");
 			lives = Integer.parseInt(in.next());
 		} catch (NumberFormatException e) {
-			Util.userPrompt(Util.INVALID_CONFIG_MSG);
+			userPrompt(INVALID_CONFIG_MSG);
 			configure();
 		}
 
 		if (playerN >= 0 && lives >= 0) 
 			instantiatePlayers(playerN, lives);
 		else {
-			Util.userPrompt(Util.INVALID_CONFIG_MSG);
+			userPrompt(INVALID_CONFIG_MSG);
 			configure();
 		}
 	}
@@ -57,13 +62,13 @@ public class OfflineGame {
 	private void instantiatePlayers(int playerN, int lives) {
 		String msg = "\tEnter a name for player ",
 		duplicateNamesMsg = "\n\tPlease enter a different name for each player";
+		clearScreen("\n\n");
 
-		Util.clearScreen("\n\n");
 		for (int i = 0; i < playerN; i++)
-			players.add(new Player(Util.getStr(msg + (i+1) + ": ", in), lives));
+			players.add(new Player(getStr(msg + (i+1) + ": ", in), lives));
 			
-		if (Util.hasDuplicates(players)) {
-			Util.userPrompt(duplicateNamesMsg);
+		if (hasDuplicates(players)) {
+			userPrompt(duplicateNamesMsg);
 			players.clear();
 			instantiatePlayers(playerN, lives);
 		} 
@@ -72,41 +77,97 @@ public class OfflineGame {
 	
 	private void gameLoop() {
 		Player p;
-		boolean finished = false, newRound = true;
+		int deceitN = 0;
+		String ready = "\n\tIs that you, ",
+		beliefMsg = ", Do you believe ";
+		boolean newRound = true, believe;
+		clearScreen();
 
-		
-		while (players.size() > 1 && !finished) {
+		while (players.size() > 1) {
 			pIter = players.listIterator();
-			
-			while (pIter.hasNext() && !finished) {
+			while (pIter.hasNext()) {
 				p = pIter.next();
 				
+				if (players.size() == 1) break;
+				clearScreen();
+
 				if (newRound) {
+					dice.clearHistory();
 					dice.shake();
-					printStats(p);
-					out.println(dice.getDrawing());
+					printStats(p, dice);
+					dice.printDrawing();
+				} else {
+					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
+					
+					if (believe && dice.get() != deceitN) 
+						dice.setPrev(deceitN);
+					
+					if (!believe && deceitN != dice.get()) {
+
+						if (players.size() == 2 && pIter.hasNext())
+							p = pIter.next();
+						else {
+							pIter.previous();
+							p = pIter.previous();
+						}
+							
+						p.lives -= 1;
+						userPrompt("\n\t" + p.name + " lost a life", WHITE);
+
+						if (p.lives == 0) {
+							userPrompt("\t ... and he DIED\n");
+							pIter.remove();
+							newRound = true;
+							p = pIter.next();
+							continue;
+						} 
+					}   
+
+					if (!believe && dice.get() == deceitN) {
+						p.lives -= 1;
+						userPrompt("\n\tYou lost a life");
+
+						if (p.lives == 0) {
+							userPrompt("\t... and you DIED\n");
+							pIter.remove();
+							newRound = true;
+							continue;
+						}
+
+						clearScreen();
+						printStats(p, dice);
+						dice.printDrawing();
+						newRound = true;
+					}
+					
+					dice.shake();
+					printStats(p, dice);
+					dice.printDrawing();
 				}
 				
-				newRound = false;
-				finished = true;
-			}
-		}
-	}
-	
-	
-	private void printStats(Player player) {
-		out.println( "\n\n\t🐵 ".concat(player.name)
-				.concat("⏪ ")
-				.concat(dice.getPrev() + "   ")
-				.concat("")
-				.concat((dice.get() == 21 ? "東京 TOKYO 東京" : dice.get()) + "   ")
-				.concat(player.lives + "❤️"));
-	}
+				deceitN = getInt("\tWhat will you say?: ", in);
+				
+				if (!Dice.isValid(deceitN)) { // here add if made up value is worse than prev, also remove live
+					userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
+					userPrompt("\n\t... -1 life", 300);
+					p.lives -= 1;
+					clearScreen();
+					printStats(p, dice);
+					dice.printDrawing();
+					newRound = true;
+				} else newRound = false;
+				
+				if (p.lives == 0) {
+					userPrompt("\tYOU DIED\n");
+					pIter.remove();
+					newRound = true;
+				} else newRound = false;
 
-	
-	private void test() {
-		for (Player p : players)
-			out.println("name: " + p.name + ", lives: " + p.lives);
+				userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
+				
+			}
+		} out.println("\n\n\t" + players.get(players.size()-1).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
+		
 	}
 
 	

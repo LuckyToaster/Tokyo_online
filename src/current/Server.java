@@ -107,7 +107,7 @@ public class Server implements Runnable {
 	
 	public boolean prevSincereAndLuckyCurrentSus() {
 		boolean didNotLie = parseInt(deceitMsg) == dice.get(),
-		lucky = dice.get() >= dice.getPrev(),
+		lucky = dice.get() >= dice.getPrevVal(),
 		currentSus = answer.equals("n");
 
 		return didNotLie && lucky && currentSus;
@@ -116,7 +116,7 @@ public class Server implements Runnable {
 	
 	public boolean prevLiedOrUnluckyCurrentSus() {
 		boolean lied = parseInt(deceitMsg) != dice.get(),
-		unlucky = dice.get() < dice.getPrev(),
+		unlucky = dice.get() < dice.getPrevVal(),
 		currentSus = answer.equals("n");
 
 		return (lied || unlucky) && currentSus;
@@ -125,7 +125,7 @@ public class Server implements Runnable {
 	
 	public boolean currentMessedUp() {
 		// add out of range, not a number ... etc
-		return parseInt(deceitMsg) < dice.getPrev();
+		return parseInt(deceitMsg) < dice.getPrevVal();
 	}
 	
 	
@@ -182,7 +182,7 @@ public class Server implements Runnable {
 	public String printStats(Player player) {
 		return "\t�?� ".concat(player.name)
 				.concat("   �?� ")
-				.concat(dice.getPrev() + "   ")
+				.concat(dice.getPrevVal() + "   ")
 				.concat("😂 ")
 				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
 				.concat(player.lives + " �?��?");

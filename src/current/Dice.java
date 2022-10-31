@@ -57,13 +57,32 @@ public class Dice {
 			d2 = new BufferedReader(new StringReader(diceArt[1]));
 		
 			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
-				finalArt += "\t\t".concat(l1).concat("   ").concat(l2).concat("\n");
+				finalArt += "\t  ".concat(l1).concat("   ").concat(l2).concat("\n");
 
 			d1.close(); 
 			d2.close();
 		} catch (IOException e) {}
 
 		return finalArt;
+	}
+	
+	
+	public void printDrawing() {
+		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
+		String l1, l2, finalArt = "\n"; 
+		BufferedReader d1, d2;
+		try {
+			d1 = new BufferedReader(new StringReader(diceArt[0]));
+			d2 = new BufferedReader(new StringReader(diceArt[1]));
+		
+			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
+				finalArt += "\t  ".concat(l1).concat("   ").concat(l2).concat("\n");
+
+			d1.close(); 
+			d2.close();
+		} catch (IOException e) {}
+
+		System.out.println(finalArt);
 	}
 	
 	
@@ -76,23 +95,33 @@ public class Dice {
 		out.println(getDrawing());
 	}
 
+	
+	public int get() {
+		return result;
+	}
+	
 
-	private int prev() {
+	public int prev() {
 		if (history.size() > 1) 
 			return history.get(history.size()-2);
 		else return 0;
 	}
 	
 	
+	public void setPrev(int n) {
+		history.set(history.size() -1, n);
+	}
+	
+	
 	/**
 	 * @return the in-game value
 	 */
-	public int get() {
+	public int getVal() {
 		return calcVal(result);
 	}
 
 	
-	public int getPrev() {
+	public int getPrevVal() {
 		return calcVal(prev());
 	}
 
@@ -114,7 +143,7 @@ public class Dice {
 	/**
 	 * Tokyo throws hierarchy
 	 */
-	private int calcVal(int n) {
+	public static int calcVal(int n) {
 		switch(n) {
 		case (21): return 21;
 		case (66): return 20;

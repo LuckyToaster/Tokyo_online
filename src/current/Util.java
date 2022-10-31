@@ -12,6 +12,7 @@ public class Util {
 	
 	public static final String INPUT_MISMATCH_MSG = "\n\tInput mismatch motherf*****r";
 	public static final String INVALID_CONFIG_MSG = "\n\tPleaser enter a valid configuration";
+	public static final String NOT_A_NUM_MSG =  "\n\tPlease enter a number\n\n";
 
 	public static final String RED = "\u001B[31m";
 	public static final String GREEN = "\u001B[32m";
@@ -49,19 +50,51 @@ public class Util {
 	}
 	
 	
-	/**
-	 * Get a string from standard input.
-	 * @param msg - the msg to prompt the user
-	 * @param in - scanner to get the input String
-	 * @return - String from standard input
-	 */
+	public static void userPrompt(String msg, String color) {
+		out.print(color + msg + RESET);
+		try {
+			Thread.sleep(750);
+		} catch (InterruptedException e) {}
+	}
+	
+	public static void userPrompt(String msg, String color, int time) {
+		out.print(color + msg + RESET);
+		try {
+			Thread.sleep(time);
+		} catch (InterruptedException e) {}
+	}
+	
+	
 	public static String getStr(String msg, Scanner in) {
+		out.print(msg);
+		return in.next().trim();
+	}
+	
+	
+	public static int getInt(String msg, Scanner in) {
+		int n = 0;
+		try {
+			out.print(msg);
+			n = Integer.valueOf(in.next().trim());
+		} catch (NumberFormatException e) {
+			Util.userPrompt(Util.NOT_A_NUM_MSG);
+			getInt(msg, in);
+		}
+		return n;
+	}
+	
+	
+	public static boolean getYesOrNo(String msg, Scanner in) {
 		String input = "";
 		do {
+			clearScreen();
 			out.print(msg);
-			input = in.next().trim();
-		} while (input.isBlank() || input.isEmpty());
-		return input;
+			input =  in.next().trim().toLowerCase();
+		} while (!input.equals("yes") && !input.equals("no") && !input.equals("y") && !input.equals("n"));
+
+		if (input.equals("yes") || input.equals("y")) 
+			return true;
+		else return false;
 	}
 
 
@@ -78,6 +111,16 @@ public class Util {
 	}
 	
 	
+	public static void printStats(Player p, Dice d) {
+		out.println( "\n\n\t🐵 ".concat(p.name)
+				.concat("   ⏪ ")
+				.concat(d.prev() + "   ")
+				.concat("😂 ")
+				.concat((d.get() == 21 ? "東京 TOKYO 東京" : d.get()) + "   ")
+				.concat(p.lives + "❤️"));
+	}
+	
+	
 	public static boolean hasDuplicates(List<Player> list) {
 		final Set<String> set = new HashSet<>();
 		for (Player p : list)
@@ -85,4 +128,5 @@ public class Util {
 				return true;
 		return false;
 	}
+	
 }
