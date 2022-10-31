@@ -39,7 +39,9 @@ public class Game {
 		else if (choice == 3) {
 			initializeServer();
 			connectToServer();
-		} else {
+		} else if (choice == 4)
+			playOffline();
+		else {
 			userPrompt("\n\tPlease select a valid option", 1000);
 			askUserConnectOrHostLoop();
 		}
@@ -101,6 +103,11 @@ public class Game {
 		}
 	}
 
+	
+	private static void playOffline() {
+		new OfflineGame();
+	}
+	
 	
 	private static String getIP() {
 		String IP = null;

@@ -13,5 +13,11 @@ public class Player {
 		this.name = name;
 		this.lives = lives;
 	}
+	
+	public Player(String name, int lives) {
+		this.name = name;
+		this.lives = lives;
+		this.s = null;
+	}
 
 }

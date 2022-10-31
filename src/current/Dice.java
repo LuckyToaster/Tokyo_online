@@ -23,12 +23,12 @@ public class Dice {
 		history = new ArrayList<>();
 		dice = new int[2];
 		this.ASCII = new String[] {
-			"-------\n|     |\n|  â—?  |\n|     |\n-------",
-			"-------\n| â—?   |\n|     |\n|   â—? |\n-------",
-			"-------\n| â—?   |\n|  â—?  |\n|   â—? |\n-------",
-			"-------\n| â—? â—? |\n|     |\n| â—? â—? |\n-------",
-			"-------\n| â—? â—? |\n|  â—?  |\n| â—? â—? |\n-------",
-			"-------\n| â—? â—? |\n| â—? â—? |\n| â—? â—? |\n-------"
+			"-------\n|     |\n|  ï¿½?  |\n|     |\n-------",
+			"-------\n| ï¿½?   |\n|     |\n|   ï¿½? |\n-------",
+			"-------\n| ï¿½?   |\n|  ï¿½?  |\n|   ï¿½? |\n-------",
+			"-------\n| ï¿½? ï¿½? |\n|     |\n| ï¿½? ï¿½? |\n-------",
+			"-------\n| ï¿½? ï¿½? |\n|  ï¿½?  |\n| ï¿½? ï¿½? |\n-------",
+			"-------\n| ï¿½? ï¿½? |\n| ï¿½? ï¿½? |\n| ï¿½? ï¿½? |\n-------"
 		};
 	}
 
@@ -67,7 +67,7 @@ public class Dice {
 	}
 	
 	
-	public static int throwDie() {
+	private static int throwDie() {
 		return (int) ( 1 + random() * 6); 
 	}
 	
@@ -77,12 +77,7 @@ public class Dice {
 	}
 
 
-	public int get() {
-		return result;
-	}
-
-
-	public int prev() {
+	private int prev() {
 		if (history.size() > 1) 
 			return history.get(history.size()-2);
 		else return 0;
@@ -92,12 +87,12 @@ public class Dice {
 	/**
 	 * @return the in-game value
 	 */
-	public int getVal() {
+	public int get() {
 		return calcVal(result);
 	}
 
 	
-	public int getPrevVal() {
+	public int getPrev() {
 		return calcVal(prev());
 	}
 
@@ -111,7 +106,7 @@ public class Dice {
 		history.clear();
 	}
 	
-	public static boolean validateNumber(int num) {
+	public static boolean isValid(int num) {
 		Integer[] validNums = {21,66,55,44,33,22,22,11,65,64,63,62,61,54,53,52,51,43,42,41,32,31};
 		return Arrays.asList(validNums).contains(num);
 	}

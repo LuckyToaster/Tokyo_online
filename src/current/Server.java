@@ -10,12 +10,12 @@ import java.util.Scanner;
 
 public class Server implements Runnable {
 	
-	private Dice dice;
-	private ServerHandler sh;
-	private List<Player> players;
-	private ListIterator<Player> playersIter;
-	private String deceitMsg, answer;
-	private boolean newRound, firstDeath, finished;
+	public Dice dice;
+	public ServerHandler sh;
+	public List<Player> players;
+	public ListIterator<Player> playersIter;
+	public String deceitMsg, answer;
+	public boolean newRound, firstDeath, finished;
 
 
 	public Server(int port, int connections, int lives) {
@@ -107,7 +107,7 @@ public class Server implements Runnable {
 	
 	public boolean prevSincereAndLuckyCurrentSus() {
 		boolean didNotLie = parseInt(deceitMsg) == dice.get(),
-		lucky = dice.getVal() >= dice.getPrevVal(),
+		lucky = dice.get() >= dice.getPrev(),
 		currentSus = answer.equals("n");
 
 		return didNotLie && lucky && currentSus;
@@ -116,7 +116,7 @@ public class Server implements Runnable {
 	
 	public boolean prevLiedOrUnluckyCurrentSus() {
 		boolean lied = parseInt(deceitMsg) != dice.get(),
-		unlucky = dice.getVal() < dice.getPrevVal(),
+		unlucky = dice.get() < dice.getPrev(),
 		currentSus = answer.equals("n");
 
 		return (lied || unlucky) && currentSus;
@@ -125,7 +125,7 @@ public class Server implements Runnable {
 	
 	public boolean currentMessedUp() {
 		// add out of range, not a number ... etc
-		return parseInt(deceitMsg) < dice.getPrevVal();
+		return parseInt(deceitMsg) < dice.getPrev();
 	}
 	
 	
@@ -182,7 +182,7 @@ public class Server implements Runnable {
 	public String printStats(Player player) {
 		return "\t�?� ".concat(player.name)
 				.concat("   �?� ")
-				.concat(dice.prev() + "   ")
+				.concat(dice.getPrev() + "   ")
 				.concat("😂 ")
 				.concat((dice.get() == 21 ? "TOKYO" : dice.get()) + "   ")
 				.concat(player.lives + " �?��?");

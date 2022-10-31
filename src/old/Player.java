@@ -14,4 +14,10 @@ public class Player {
 		this.lives = lives;
 	}
 
+	public Player(String name, int lives) {
+		this.name = name;
+		this.lives = lives;
+		this.s = null;
+	}
+
 }

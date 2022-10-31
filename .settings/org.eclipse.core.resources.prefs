@@ -1,7 +1,9 @@
 eclipse.preferences.version=1
 encoding//src/current/Client.java=UTF-8
 encoding//src/current/Dice.java=UTF-8
+encoding//src/current/OfflineGame.java=UTF-8
 encoding//src/current/Server.java=UTF-8
+encoding//src/current/Util.java=UTF-8
 encoding//src/old/Client.java=UTF-8
 encoding//src/old/Dice.java=UTF-8
 encoding//src/old/Server.java=UTF-8
