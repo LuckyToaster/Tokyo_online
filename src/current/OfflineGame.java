@@ -101,33 +101,37 @@ public class OfflineGame {
 					dice.shake();
 					printStats(p, dice);
 					dice.printDrawing();
+					newRound = false;
 				} else {
 					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
 					
 					if (believe && dice.get() != deceitN) // TRICKED
 						dice.setPrev(deceitN);
 					else if (!believe && deceitN != dice.get()) { // OUTWITTED
-						pIter.previous();
-						p = pIter.previous();
+						if (pIter.hasPrevious()) {
+							pIter.previous();
+							p = pIter.previous();
+						} else {
+							for (int i = 0; i < players.size()-1; i++)
+								pIter.next();
+							p = pIter.next();
+						}
 						looseLife(p, "\n\t" + p.name + " lost a life", WHITE);
-						if (handleDeath(p, "... and DIED\n"))
-							continue;
+						handleDeath(p, "... and DIED\n");
 					} else if (!believe && dice.get() == deceitN) { // WRONG
 						looseLife(p, "\n\tYou lost a life");
-						if (handleDeath(p, " ... and you DIED\n"))
-							continue;
+						handleDeath(p, " ... and you DIED\n");
 					}
 
 					dice.shake();
 					printStats(p, dice);
 					dice.printDrawing();
-					newRound = false;
 				}
 				
 				deceitN = getInt("\tWhat will you say?: ", in);
 				
-				if (handleInvalidDeceitNumber(p, deceitN)) continue;
-				if (handleDeath(p, "\t YOU DIED")) continue;
+				handleInvalidDeceitNumber(p, deceitN);
+				handleDeath(p, "\t YOU DIED");
 				userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
 			}
 		} out.println("\n\n\t" + players.get(0).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
@@ -151,6 +155,7 @@ public class OfflineGame {
 		if (p.lives == 0) {
 			userPrompt(msg);
 			pIter.remove();
+			newRound = true;
 			return true;
 		} else return false;
 	}
@@ -168,14 +173,14 @@ public class OfflineGame {
 	
 
 	public static void main(String[] args) {
-		OfflineGame game = new OfflineGame();
+		//OfflineGame game = new OfflineGame();
 
 		//System.out.println("😂");
-		/*
 		List<Integer> l = Arrays.asList(0,1,2,3,4);
 		ListIterator<Integer> li;
 		int c = 0;
 
+		/*
 		while (c < 3) {
 			li = l.listIterator();
 			while (li.hasNext())
@@ -183,6 +188,12 @@ public class OfflineGame {
 			c++;
 		}
 		*/
+		
+		li = l.listIterator();
+		System.out.println(li.next());
+		System.out.println(li.next());
+		System.out.println(li.previous());
+		System.out.println(li.previous());
 	}
 	
 }
