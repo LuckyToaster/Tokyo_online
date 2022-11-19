@@ -15,8 +15,7 @@ import java.util.List;
 public class Dice {
 	
 	private final String[] ASCII;
-	private List<Integer> history;
-	private int result;
+	public List<Integer> history;
 	private int[] dice;
 	
 	public Dice() {
@@ -39,12 +38,9 @@ public class Dice {
 	 */
 	public void shake() {
 		dice = new int[]{throwDie(), throwDie()};
-
 		if (dice[0] >= dice[1])
-			result = parseInt(valueOf(dice[0]) + valueOf(dice[1]));
-		else result = parseInt(valueOf(dice[1]) + valueOf(dice[0]));
-
-		history.add(result);
+			history.add(parseInt(valueOf(dice[0]) + valueOf(dice[1])));
+		else history.add(parseInt(valueOf(dice[1]) + valueOf(dice[0])));
 	}
 
 	
@@ -66,26 +62,30 @@ public class Dice {
 		return finalArt;
 	}
 	
-	
+	// TODO: remove duplicate methods
 	public void printDrawing() {
-		System.out.println(getDrawing());
+		out.println(getDrawing());
 	}
-	
-	
-	private static int throwDie() {
-		return (int) ( 1 + random() * 6); 
-	}
-	
 	
 	public void draw() {
 		out.println(getDrawing());
 	}
-
 	
-	public int get() {
-		return result;
+
+	private static int throwDie() {
+		return (int) ( 1 + random() * 6); 
 	}
 	
+	public int get() {
+		if (history.size() > 0) 
+			return history.get(history.size()-1);
+		else return 0;
+	}
+	
+	public void set(int n) {
+		if (history.size() > 0) 
+			history.set(history.size()-1, n);
+	}
 
 	public int getPrev() {
 		if (history.size() > 1) 
@@ -93,17 +93,16 @@ public class Dice {
 		else return 0;
 	}
 	
-	
 	public void setPrev(int n) {
-		history.set(history.size() -1, n);
+		if (history.size() > 1)
+			history.set(history.size() -2, n);
 	}
-	
 	
 	/**
 	 * @return the in-game value
 	 */
 	public int getVal() {
-		return calcVal(result);
+		return calcVal(get());
 	}
 
 	
@@ -158,10 +157,20 @@ public class Dice {
 	
 	
 	public static void main(String[] args) {
-		Dice dice = new Dice();
-		dice.shake();
-		System.out.println(dice.getDrawing());
-		
+
 	}
 	
+	public void test() {
+		Dice dice = new Dice();
+		for (int i = 0; i < 2; i++) {
+			dice.shake();
+			System.out.println(dice.get());
+		}
+		
+		dice.set(21);
+		dice.setPrev(66);
+
+		System.out.println("last: " + dice.get());
+		System.out.println("previous: " + dice.getPrev());
+	}
 }

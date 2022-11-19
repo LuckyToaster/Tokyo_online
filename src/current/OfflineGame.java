@@ -89,6 +89,7 @@ public class OfflineGame {
 				p = pIter.next();
 				
 				if (players.size() == 1) break;
+
 				clearScreen();
 
 				if (newRound) {
@@ -99,10 +100,12 @@ public class OfflineGame {
 				} else {
 					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
 					
+					// you were tricked
 					if (believe && dice.get() != deceitN) 
 						dice.setPrev(deceitN);
 					
-					if (!believe && deceitN != dice.get()) {
+					// you didnt fall for the lie
+					else if (!believe && deceitN != dice.get()) {
 
 						if (players.size() == 2 && pIter.hasNext())
 							p = pIter.next();
@@ -121,9 +124,7 @@ public class OfflineGame {
 							p = pIter.next(); // BUG HERE fix nosuchelement ex
 							continue;
 						} 
-					}   
-
-					if (!believe && dice.get() == deceitN) {
+					} else if (!believe && dice.get() == deceitN) {
 						p.lives -= 1;
 						userPrompt("\n\tYou lost a life");
 
@@ -138,11 +139,13 @@ public class OfflineGame {
 						printStats(p, dice);
 						dice.printDrawing();
 						newRound = true;
-					}
-					
+					} 
+
+					/*
 					dice.shake();
 					printStats(p, dice);
 					dice.printDrawing();
+					*/
 				}
 				
 				deceitN = getInt("\tWhat will you say?: ", in);
