@@ -112,18 +112,16 @@ public class OfflineGame {
 						looseLife(p, "\n\t" + p.name + " lost a life", WHITE);
 						if (handleDeath(p, "... and DIED\n"))
 							continue;
-						continue;
 					} else if (!believe && dice.get() == deceitN) { // WRONG
 						looseLife(p, "\n\tYou lost a life");
 						if (handleDeath(p, " ... and you DIED\n"))
 							continue;
-						continue;
 					}
 
 					dice.shake();
 					printStats(p, dice);
 					dice.printDrawing();
-					// might wanna flip newRound to false
+					newRound = false;
 				}
 				
 				deceitN = getInt("\tWhat will you say?: ", in);
