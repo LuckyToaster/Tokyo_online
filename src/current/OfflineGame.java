@@ -3,6 +3,7 @@ package current;
 import static java.lang.System.out;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -19,6 +20,7 @@ public class OfflineGame {
 	private List<Player> players;
 	private ListIterator<Player> pIter;
 	private Dice dice;
+	private boolean newRound;
 
 	public OfflineGame() {
 		players = new ArrayList<>();
@@ -80,7 +82,7 @@ public class OfflineGame {
 		int deceitN = 0;
 		String ready = "\n\tIs that you, ",
 		beliefMsg = ", Do you believe ";
-		boolean newRound = true, believe;
+		boolean believe;
 		clearScreen();
 
 		while (players.size() > 1) {
@@ -88,7 +90,8 @@ public class OfflineGame {
 			while (pIter.hasNext()) {
 				p = pIter.next();
 				
-				if (players.size() == 1) break;
+				if (players.size() == 1) 
+					break;
 
 				clearScreen();
 
@@ -100,80 +103,87 @@ public class OfflineGame {
 				} else {
 					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
 					
-					// you were tricked
-					if (believe && dice.get() != deceitN) 
+					if (believe && dice.get() != deceitN) // TRICKED
 						dice.setPrev(deceitN);
-					
-					// you didnt fall for the lie
-					else if (!believe && deceitN != dice.get()) {
-
-						if (players.size() == 2 && pIter.hasNext())
-							p = pIter.next();
-						else {
-							pIter.previous();
-							p = pIter.previous();
-						}
-							
-						p.lives -= 1;
-						userPrompt("\n\t" + p.name + " lost a life", WHITE);
-
-						if (p.lives == 0) {
-							userPrompt(" ... and he DIED\n");
-							pIter.remove();
-							newRound = true;
-							p = pIter.next(); // BUG HERE fix nosuchelement ex
+					else if (!believe && deceitN != dice.get()) { // OUTWITTED
+						pIter.previous();
+						p = pIter.previous();
+						looseLife(p, "\n\t" + p.name + " lost a life", WHITE);
+						if (handleDeath(p, "... and DIED\n"))
 							continue;
-						} 
-					} else if (!believe && dice.get() == deceitN) {
-						p.lives -= 1;
-						userPrompt("\n\tYou lost a life");
-
-						if (p.lives == 0) {
-							userPrompt(" ... and you DIED\n");
-							pIter.remove();
-							newRound = true;
+						continue;
+					} else if (!believe && dice.get() == deceitN) { // WRONG
+						looseLife(p, "\n\tYou lost a life");
+						if (handleDeath(p, " ... and you DIED\n"))
 							continue;
-						}
+						continue;
+					}
 
-						clearScreen();
-						printStats(p, dice);
-						dice.printDrawing();
-						newRound = true;
-					} 
-
-					/*
 					dice.shake();
 					printStats(p, dice);
 					dice.printDrawing();
-					*/
+					// might wanna flip newRound to false
 				}
 				
 				deceitN = getInt("\tWhat will you say?: ", in);
 				
-				if (!Dice.isValid(deceitN)) { // here add if made up value is worse than prev, also remove live
-					userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
-					userPrompt("\n\t... -1 life\n", 300);
-					p.lives -= 1;
-					newRound = true;
-				} else newRound = false;
-				
-				if (p.lives == 0) {
-					userPrompt("\tYOU DIED\n");
-					pIter.remove();
-					newRound = true;
-				} else newRound = false;
-
+				if (handleInvalidDeceitNumber(p, deceitN)) continue;
+				if (handleDeath(p, "\t YOU DIED")) continue;
 				userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
-				
 			}
-		} out.println("\n\n\t" + players.get(players.size()-1).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
+		} out.println("\n\n\t" + players.get(0).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
 		
 	}
 
 	
+	private void looseLife(Player p, String msg) {
+		p.lives -= 1;
+		userPrompt(msg);
+	}
+	
+	
+	private void looseLife(Player p, String msg, String color) {
+		p.lives -= 1;
+		userPrompt(msg, color);
+	}
+
+	
+	private boolean handleDeath (Player p, String msg) {
+		if (p.lives == 0) {
+			userPrompt(msg);
+			pIter.remove();
+			return true;
+		} else return false;
+	}
+
+	
+	private boolean handleInvalidDeceitNumber (Player p, int deceitN) {
+		if (!Dice.isValid(deceitN) || Dice.calcVal(deceitN) < dice.getVal() ) { 
+			userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
+			userPrompt("\n\t... -1 life\n", 300);
+			p.lives -= 1;
+			newRound = true;
+			return true;
+		} else return false;
+	}
+	
+
 	public static void main(String[] args) {
 		OfflineGame game = new OfflineGame();
+
 		//System.out.println("😂");
+		/*
+		List<Integer> l = Arrays.asList(0,1,2,3,4);
+		ListIterator<Integer> li;
+		int c = 0;
+
+		while (c < 3) {
+			li = l.listIterator();
+			while (li.hasNext())
+				System.out.println(li.next());
+			c++;
+		}
+		*/
 	}
 	
 }
