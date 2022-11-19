@@ -68,21 +68,7 @@ public class Dice {
 	
 	
 	public void printDrawing() {
-		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
-		String l1, l2, finalArt = "\n"; 
-		BufferedReader d1, d2;
-		try {
-			d1 = new BufferedReader(new StringReader(diceArt[0]));
-			d2 = new BufferedReader(new StringReader(diceArt[1]));
-		
-			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
-				finalArt += "\t  ".concat(l1).concat("   ").concat(l2).concat("\n");
-
-			d1.close(); 
-			d2.close();
-		} catch (IOException e) {}
-
-		System.out.println(finalArt);
+		System.out.println(getDrawing());
 	}
 	
 	
@@ -101,7 +87,7 @@ public class Dice {
 	}
 	
 
-	public int prev() {
+	public int getPrev() {
 		if (history.size() > 1) 
 			return history.get(history.size()-2);
 		else return 0;
@@ -122,7 +108,7 @@ public class Dice {
 
 	
 	public int getPrevVal() {
-		return calcVal(prev());
+		return calcVal(getPrev());
 	}
 
 

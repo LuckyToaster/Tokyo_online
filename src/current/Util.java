@@ -114,7 +114,7 @@ public class Util {
 	public static void printStats(Player p, Dice d) {
 		out.println( "\n\n\t🐵 ".concat(p.name)
 				.concat("   ⏪ ")
-				.concat(d.prev() + "   ")
+				.concat(d.getPrev() + "   ")
 				.concat("😂 ")
 				.concat((d.get() == 21 ? "東京 TOKYO 東京" : d.get()) + "   ")
 				.concat(p.lives + "❤️"));

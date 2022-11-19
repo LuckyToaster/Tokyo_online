@@ -115,10 +115,10 @@ public class OfflineGame {
 						userPrompt("\n\t" + p.name + " lost a life", WHITE);
 
 						if (p.lives == 0) {
-							userPrompt("\t ... and he DIED\n");
+							userPrompt(" ... and he DIED\n");
 							pIter.remove();
 							newRound = true;
-							p = pIter.next();
+							p = pIter.next(); // BUG HERE fix nosuchelement ex
 							continue;
 						} 
 					}   
@@ -128,7 +128,7 @@ public class OfflineGame {
 						userPrompt("\n\tYou lost a life");
 
 						if (p.lives == 0) {
-							userPrompt("\t... and you DIED\n");
+							userPrompt(" ... and you DIED\n");
 							pIter.remove();
 							newRound = true;
 							continue;
@@ -149,11 +149,8 @@ public class OfflineGame {
 				
 				if (!Dice.isValid(deceitN)) { // here add if made up value is worse than prev, also remove live
 					userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
-					userPrompt("\n\t... -1 life", 300);
+					userPrompt("\n\t... -1 life\n", 300);
 					p.lives -= 1;
-					clearScreen();
-					printStats(p, dice);
-					dice.printDrawing();
 					newRound = true;
 				} else newRound = false;
 				
