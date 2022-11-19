@@ -26,7 +26,7 @@ public class OfflineGame {
 		players = new ArrayList<>();
 		dice = new Dice();
 		in = new Scanner(System.in);
-		newRound = false;
+		newRound = true;
 		configure();
 		gameLoop();
 	}
