@@ -116,7 +116,7 @@ public class Util {
 				.concat("   ⏪ ")
 				.concat(d.getPrev() + "   ")
 				.concat("😂 ")
-				.concat((d.get() == 21 ? "東京 TOKYO 東京" : d.get()) + "   ")
+				.concat((d.get() == 21 ? " TOKYO " : d.get()) + "   ")
 				.concat(p.lives + "❤️"));
 	}
 	
