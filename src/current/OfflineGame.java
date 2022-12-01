@@ -97,7 +97,7 @@ public class OfflineGame {
 
 				handleTricked();
 				handleWrong();
-				handleOutwitted();
+				//handleOutwitted();
 
 				if (!newRound) normalRound();
 
@@ -154,7 +154,7 @@ public class OfflineGame {
 		dice.clearHistory();
 		dice.shake();
 		printStats(p, dice);
-		dice.printDrawing();
+		dice.draw();
 		newRound = false;
 	}
 	
@@ -162,7 +162,7 @@ public class OfflineGame {
 	private void normalRound() {
 		dice.shake();
 		printStats(p, dice);
-		dice.printDrawing();
+		dice.draw();
 	}
 
 	

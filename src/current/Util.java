@@ -57,6 +57,7 @@ public class Util {
 		} catch (InterruptedException e) {}
 	}
 	
+
 	public static void userPrompt(String msg, String color, int time) {
 		out.print(color + msg + RESET);
 		try {

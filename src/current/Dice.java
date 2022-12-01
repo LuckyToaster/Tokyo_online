@@ -14,6 +14,7 @@ import java.util.List;
 
 public class Dice {
 	
+	private static final List<Integer> VALID_NUMS = List.of(31,32,41,42,43,51,52,53,54,61,62,63,64,65,11,22,33,44,55,66,21);
 	private final String[] ASCII;
 	public List<Integer> history;
 	private int[] dice;
@@ -21,7 +22,7 @@ public class Dice {
 	public Dice() {
 		history = new ArrayList<>();
 		dice = new int[2];
-		this.ASCII = new String[] {
+		ASCII = new String[] {
 			"-------\n|     |\n|  •  |\n|     |\n-------",
 			"-------\n| •   |\n|     |\n|   • |\n-------",
 			"-------\n| •   |\n|  •  |\n|   • |\n-------",
@@ -30,12 +31,7 @@ public class Dice {
 			"-------\n| • • |\n| • • |\n| • • |\n-------"
 		};
 	}
-
 	
-	/**
-	 * Interpret the result of the dice and store it
-	 * 
-	 */
 	public void shake() {
 		dice = new int[]{throwDie(), throwDie()};
 		if (dice[0] >= dice[1])
@@ -43,7 +39,6 @@ public class Dice {
 		else history.add(parseInt(valueOf(dice[1]) + valueOf(dice[0])));
 	}
 
-	
 	public String getDrawing() {
 		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
 		String l1, l2, finalArt = "\n"; 
@@ -62,16 +57,10 @@ public class Dice {
 		return finalArt;
 	}
 	
-	// TODO: remove duplicate methods
-	public void printDrawing() {
-		out.println(getDrawing());
-	}
-	
 	public void draw() {
 		out.println(getDrawing());
 	}
 	
-
 	private static int throwDie() {
 		return (int) ( 1 + random() * 6); 
 	}
@@ -98,79 +87,37 @@ public class Dice {
 			history.set(history.size() -2, n);
 	}
 	
-	/**
-	 * @return the in-game value
-	 */
 	public int getVal() {
 		return calcVal(get());
 	}
 
-	
 	public int getPrevVal() {
 		return calcVal(getPrev());
 	}
-
 
 	public int historySize() {
 		return history.size();
 	}
 	
-	
 	public void clearHistory() {
 		history.clear();
 	}
 	
-	public static boolean isValid(int num) {
-		Integer[] validNums = {21,66,55,44,33,22,22,11,65,64,63,62,61,54,53,52,51,43,42,41,32,31};
-		return Arrays.asList(validNums).contains(num);
+	public static boolean isValid(int n) {
+		return VALID_NUMS.contains(n);
 	}
 	
-	/**
-	 * Tokyo throws hierarchy
-	 */
 	public static int calcVal(int n) {
-		switch(n) {
-		case (21): return 21;
-		case (66): return 20;
-		case (55): return 19;
-		case (44): return 18;
-		case (33): return 17;
-		case (22): return 16;
-		case (11): return 15;
-		case (65): return 14;
-		case (64): return 13;
-		case (63): return 12;
-		case (62): return 11;
-		case (61): return 10;
-		case (54): return 9;
-		case (53): return 8;
-		case (52): return 7;
-		case (51): return 6;
-		case (43): return 5;
-		case (42): return 4;
-		case (41): return 3;
-		case (32): return 2;
-		case (31): return 1;
-		default: return 0;
-		}
+		if (VALID_NUMS.contains(n))
+			return VALID_NUMS.indexOf(n) + 1;
+		else return 0;
 	}
-	
 	
 	public static void main(String[] args) {
-
-	}
-	
-	public void test() {
 		Dice dice = new Dice();
-		for (int i = 0; i < 2; i++) {
+		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			dice.shake();
-			System.out.println(dice.get());
+			System.out.println(Dice.calcVal(dice.get()) == Dice.calcVal(dice.get()));
 		}
-		
-		dice.set(21);
-		dice.setPrev(66);
-
-		System.out.println("last: " + dice.get());
-		System.out.println("previous: " + dice.getPrev());
 	}
 }
