@@ -45,7 +45,6 @@ public class Dice {
 			d1.close();
 			d2.close();
 		} catch (IOException e) {}
-
 		return finalArt;
 	}
 
