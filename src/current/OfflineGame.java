@@ -83,7 +83,7 @@ public class OfflineGame {
 	
 	
 	private void gameLoop() {
-		String ready = "\n\tIs that you, ", beliefMsg = ", Do you believe ";
+		String beliefMsg = ", Do you believe ";
 		clearScreen();
 
 		while (!handleWinner()) {
