@@ -175,8 +175,10 @@ public class OfflineGame {
 	 * When the player does not believe the previous player's sincere statement
 	 */
 	private void handleWrong() {
-		if (!believe && dice.get() == deceitN)
+		if (!believe && dice.get() == deceitN) {
 			looseLife("\tYou lost a life");
+                        newRound = true;
+                }
 	}
 	
 	/**
