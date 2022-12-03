@@ -3,7 +3,6 @@ package current;
 import static java.lang.System.out;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Scanner;
@@ -70,7 +69,7 @@ public class OfflineGame {
 	private void instantiatePlayers(int playerN, int lives) {
 		String msg = "\tEnter a name for player ",
 		duplicateNamesMsg = "\n\tPlease enter a different name for each player";
-		clearScreen("\n\n");
+		clearScreen("\n");
 
 		for (int i = 0; i < playerN; i++)
 			players.add(new Player(getStr(msg + (i+1) + ": ", in), lives));
@@ -102,17 +101,21 @@ public class OfflineGame {
 					newRound = false;
 				} else { 
 					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
-					dice.shake();
-					printStats(p, dice);
-					dice.draw();
 
 					handleTricked();
 					handleWrong();
 					handleOutwitted();
+
+					if (!newRound) {
+						dice.shake();
+						printStats(p, dice);
+						dice.draw();
+					}
 				}
 
-				handleDeath("\t YOU DIED");
-				handleWinner();
+				handleDeath("\t" + p.name + " DIED");
+				if (handleWinner()) 
+					break;
 
 				if (!newRound) {
 					deceitN = getInt("\tWhat will you say?: ", in);
@@ -162,8 +165,8 @@ public class OfflineGame {
 	 * When the player believes a lie, he has to go along with the lie
 	 */
 	private void handleTricked() {
-		if (believe && dice.getPrev() != deceitN) {
-			userPrompt("\n\tYou were tricked, it was actually " + dice.get());
+		if (believe && dice.get() != deceitN) {
+			userPrompt("\tYou were tricked, it was actually " + dice.get());
 			dice.set(deceitN);
 		}
 	}
@@ -172,10 +175,8 @@ public class OfflineGame {
 	 * When the player does not believe the previous player's sincere statement
 	 */
 	private void handleWrong() {
-		if (!believe && dice.get() == deceitN) { 
-			looseLife("\n\tYou lost a life");
-			handleDeath(" ... and you DIED\n");
-		}
+		if (!believe && dice.get() == deceitN)
+			looseLife("\tYou lost a life");
 	}
 	
 	/**
@@ -187,16 +188,14 @@ public class OfflineGame {
 			if (pIter.previousIndex() >= 1) { 
 				pIter.previous();
 				p = pIter.previous();
-				looseLife("\n\t" + p.name + " lost a life\n", RED);
-				handleDeath("\t... and DIED\n");
+				looseLife("\t" + p.name + " lost a life\n", RED);
 				p = pIter.next();
 			} else {
 				for (int i = 0; i < players.size() - 2; i++) // go to penultimate index
 					pIter.next(); 
 				p = pIter.next(); // last index
 
-				looseLife("\n\t" + p.name + " lost a life\n", RED);
-				handleDeath("\t... and DIED\n");
+				looseLife("\t" + p.name + " lost a life\n", RED);
 
 				for (int i = players.size() - 1; i > 0; i--) // go back to the second index
 					pIter.previous(); 
@@ -209,24 +208,6 @@ public class OfflineGame {
 
 	public static void main(String[] args) {
 		OfflineGame game = new OfflineGame();
-
-		/*
-		List<Integer> l = List.of(0,1,2,3,4);
-		ListIterator<Integer> li = l.listIterator();
-		System.out.println(li.next());
-		Integer n;
-		for (int i = 0; i < l.size() - 2; i++)
-			li.next();
-		n = li.next();
-
-		System.out.println(n);
-		
-		for (int i = l.size() - 1; i > 0; i--)
-			li.previous();
-		n = li.previous();
-
-		System.out.println(n);
-		*/
 	}
 	
 }

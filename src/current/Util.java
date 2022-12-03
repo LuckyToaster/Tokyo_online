@@ -109,7 +109,7 @@ public class Util {
 	
 	
 	public static void printStats(Player p, Dice d) {
-		out.println( "\n\n\t🐵 ".concat(p.name)
+		out.println( "\n\t🐵 ".concat(p.name)
 				.concat("   ⏪ ")
 				.concat(d.getPrev() + "   ")
 				.concat("😂 ")
@@ -119,7 +119,7 @@ public class Util {
 	
 	
 	public static boolean hasDuplicates(List<Player> list) {
-		final Set<String> set = new HashSet<>();
+		Set<String> set = new HashSet<>();
 		for (Player p : list)
 			if (!set.add(p.name.toLowerCase())) 
 				return true;
