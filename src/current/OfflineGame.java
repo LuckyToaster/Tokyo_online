@@ -191,15 +191,15 @@ public class OfflineGame {
 				looseLife("\t" + p.name + " lost a life\n", RED);
 				p = pIter.next();
 			} else {
-				for (int i = 0; i < players.size() - 2; i++) // go to penultimate index
+				for (int i = 0; i < players.size() - 2; i++) 
 					pIter.next(); 
-				p = pIter.next(); // last index
+				p = pIter.next(); 
 
 				looseLife("\t" + p.name + " lost a life\n", RED);
 
-				for (int i = players.size() - 1; i > 0; i--) // go back to the second index
+				for (int i = players.size() - 1; i > 0; i--) 
 					pIter.previous(); 
-				p = pIter.previous(); // first index
+				p = pIter.previous(); 
 			}
 			newRound = true;
 		}
