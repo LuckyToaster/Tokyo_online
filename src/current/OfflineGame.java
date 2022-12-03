@@ -120,8 +120,8 @@ public class OfflineGame {
 				if (!newRound) {
 					deceitN = getInt("\tWhat will you say?: ", in);
 					handleInvalidDeceitNumber(deceitN);
-					userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
-				} else userPrompt("\n\t 🎉🎉 🥳 NEW ROUND 💯💯", WHITE, 1000);
+					userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 2000);
+				} else userPrompt("\n\t 🎉🎉 🥳 NEW ROUND 💯💯", WHITE, 2000);
 			}
 		}
 	}
