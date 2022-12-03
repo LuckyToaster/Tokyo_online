@@ -32,22 +32,6 @@ public class Dice {
 		dice = new int[2];
 	}
 
-	public String getDrawing() {
-		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
-		String l1, l2, finalArt = "\n"; 
-		try {
-			BufferedReader d1 = new BufferedReader(new StringReader(diceArt[0]));
-			BufferedReader d2 = new BufferedReader(new StringReader(diceArt[1]));
-		
-			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
-				finalArt += "\t  ".concat(l1).concat("   ").concat(l2).concat("\n");
-
-			d1.close();
-			d2.close();
-		} catch (IOException e) {}
-		return finalArt;
-	}
-
 	public void shake() {
 		dice = new int[]{throwDie(), throwDie()};
 		history.add(parseInt(valueOf(max(dice[0], dice[1]) + valueOf(min(dice[0], dice[1])))));
@@ -81,18 +65,48 @@ public class Dice {
 		else return 0;
 	}
 
-	public void draw() { out.println(getDrawing()); }
+	public void draw() { 
+		out.println(getDrawing()); 
+	}
 	
-	private static int throwDie() { return (int) ( 1 + random() * 6); }
+	private static int throwDie() { 
+		return (int) ( 1 + random() * 6); 
+	}
 	
-	public int getVal() { return calcVal(get()); }
+	public int getVal() { 
+		return calcVal(get()); 
+	}
 
-	public int getPrevVal() { return calcVal(getPrev()); }
+	public int getPrevVal() { 
+		return calcVal(getPrev()); 
+	}
 
-	public int historySize() { return history.size(); }
+	public int historySize() { 
+		return history.size(); 
+	}
 	
-	public void clearHistory() { history.clear(); }
+	public void clearHistory() { 
+		history.clear(); 
+	}
 	
-	public static boolean isValid(int n) { return VALID_NUMS.contains(n); }
+	public static boolean isValid(int n) { 
+		return VALID_NUMS.contains(n); 
+	}
+	
+	public String getDrawing() {
+		String[] diceArt = new String[]{ASCII[dice[0]-1], ASCII[dice[1]-1]};
+		String l1, l2, finalArt = "\n"; 
+		try {
+			BufferedReader d1 = new BufferedReader(new StringReader(diceArt[0]));
+			BufferedReader d2 = new BufferedReader(new StringReader(diceArt[1]));
+		
+			while ((l1 = d1.readLine()) != null && (l2 = d2.readLine()) != null)
+				finalArt += "\t  ".concat(l1).concat("   ").concat(l2).concat("\n");
+
+			d1.close();
+			d2.close();
+		} catch (IOException e) {}
+		return finalArt;
+	}
 	
 }
