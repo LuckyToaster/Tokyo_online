@@ -91,7 +91,6 @@ public class OfflineGame {
 			pIter = players.listIterator();
 
 			while (pIter.hasNext()) {
-
 				p = pIter.next();
 				clearScreen();
 
@@ -110,7 +109,6 @@ public class OfflineGame {
 					handleTricked();
 					handleWrong();
 					handleOutwitted();
-
 				}
 
 				handleDeath("\t YOU DIED");
