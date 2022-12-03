@@ -30,9 +30,10 @@ public class Util {
 	public static final String HEART = "";
 	public static final String POOP = "";
 	public static final String CLOWN = "";
+	public static final String PARTY = "🎉";
+	public static final String HUNDRED_PERCENT = "💯";
 	public static final String DEVIL = "U+1F608";
 	public static final String SKULL = "U+2620";
-
 	
 	public static void userPrompt(String msg, int time) {
 		err.print(RED + msg + RESET);
@@ -40,7 +41,6 @@ public class Util {
 			Thread.sleep(time);
 		} catch (InterruptedException e) {}
 	}
-	
 
 	public static void userPrompt(String msg) {
 		err.print(RED + msg + RESET);
@@ -49,14 +49,12 @@ public class Util {
 		} catch (InterruptedException e) {}
 	}
 	
-	
 	public static void userPrompt(String msg, String color) {
 		out.print(color + msg + RESET);
 		try {
 			Thread.sleep(750);
 		} catch (InterruptedException e) {}
 	}
-	
 
 	public static void userPrompt(String msg, String color, int time) {
 		out.print(color + msg + RESET);
@@ -65,12 +63,10 @@ public class Util {
 		} catch (InterruptedException e) {}
 	}
 	
-	
 	public static String getStr(String msg, Scanner in) {
 		out.print(msg);
 		return in.next().trim();
 	}
-	
 	
 	public static int getInt(String msg, Scanner in) {
 		int n = 0;

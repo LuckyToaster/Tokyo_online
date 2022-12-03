@@ -61,6 +61,7 @@ public class OfflineGame {
 		}
 	}
 
+
 	/**
 	 * Player instantiation screen 
 	 * @param playerN
@@ -86,43 +87,56 @@ public class OfflineGame {
 		String beliefMsg = ", Do you believe ";
 		clearScreen();
 
-		while (!handleWinner()) {
+		while (players.size() > 1) {
 			pIter = players.listIterator();
+
 			while (pIter.hasNext()) {
+
 				p = pIter.next();
 				clearScreen();
 
-				if (newRound) newRound();
-				else believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
+				if (newRound) {
+					dice.clearHistory();
+					dice.shake();
+					printStats(p, dice);
+					dice.draw();
+					newRound = false;
+				} else { 
+					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
+					dice.shake();
+					printStats(p, dice);
+					dice.draw();
 
-				handleTricked();
-				handleWrong();
-				//handleOutwitted();
+					handleTricked();
+					handleWrong();
+					handleOutwitted();
 
-				if (!newRound) normalRound();
+				}
 
-				deceitN = getInt("\tWhat will you say?: ", in);
-				handleInvalidDeceitNumber(p, deceitN);
-				handleDeath(p, "\t YOU DIED");
-				userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
+				handleDeath("\t YOU DIED");
+				handleWinner();
+
+				if (!newRound) {
+					deceitN = getInt("\tWhat will you say?: ", in);
+					handleInvalidDeceitNumber(deceitN);
+					userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 1000);
+				} else userPrompt("\n\t 🎉🎉 🥳 NEW ROUND 💯💯", WHITE, 1000);
 			}
 		}
 	}
-
 	
-	private void looseLife(Player p, String msg) {
+
+	private void looseLife(String msg) {
 		p.lives -= 1;
 		userPrompt(msg);
 	}
 	
-	
-	private void looseLife(Player p, String msg, String color) {
+	private void looseLife(String msg, String color) {
 		p.lives -= 1;
 		userPrompt(msg, color);
 	}
-
 	
-	private void handleDeath (Player p, String msg) {
+	private void handleDeath (String msg) {
 		if (p.lives == 0) {
 			userPrompt(msg);
 			pIter.remove();
@@ -130,8 +144,7 @@ public class OfflineGame {
 		}
 	}
 
-	
-	private void handleInvalidDeceitNumber (Player p, int deceitN) {
+	private void handleInvalidDeceitNumber (int deceitN) {
 		if (!Dice.isValid(deceitN) || Dice.calcVal(deceitN) < dice.getVal() ) { 
 			userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
 			userPrompt("\n\t... -1 life\n", 300);
@@ -139,7 +152,6 @@ public class OfflineGame {
 			newRound = true;
 		} 
 	}
-	
 
 	private boolean handleWinner() {
 		if (players.size() == 1) {
@@ -148,61 +160,49 @@ public class OfflineGame {
 		} else return false;
 	}
 	
-	
-	// OK
-	private void newRound() {
-		dice.clearHistory();
-		dice.shake();
-		printStats(p, dice);
-		dice.draw();
-		newRound = false;
-	}
-	
-	
-	private void normalRound() {
-		dice.shake();
-		printStats(p, dice);
-		dice.draw();
-	}
-
-	
-	// OK
+	/**
+	 * When the player believes a lie, he has to go along with the lie
+	 */
 	private void handleTricked() {
-		if (believe && dice.get() != deceitN) {
+		if (believe && dice.getPrev() != deceitN) {
 			userPrompt("\n\tYou were tricked, it was actually " + dice.get());
 			dice.set(deceitN);
 		}
 	}
 	
-	// OK
+	/**
+	 * When the player does not believe the previous player's sincere statement
+	 */
 	private void handleWrong() {
 		if (!believe && dice.get() == deceitN) { 
-			looseLife(p, "\n\tYou lost a life");
-			handleDeath(p, " ... and you DIED\n");
+			looseLife("\n\tYou lost a life");
+			handleDeath(" ... and you DIED\n");
 		}
 	}
 	
-	
+	/**
+	 * When the player outwits his opponent because he doesnt believe the previous
+	 * player's lie
+	 */
 	private void handleOutwitted() {
-		if (!believe && deceitN != dice.get()) { // OUTWITTED
-			handleDeath(p, "... and DIED\n");
-			if (pIter.previousIndex() >= 1) { // try 2 or whatever tf
+		if (!believe && deceitN != dice.get()) { 
+			if (pIter.previousIndex() >= 1) { 
 				pIter.previous();
 				p = pIter.previous();
-				looseLife(p, "\n\t" + p.name + " lost a life", WHITE);
-				handleDeath(p, "... and DIED\n");
-				handleWinner();
-				pIter.next();
+				looseLife("\n\t" + p.name + " lost a life\n", RED);
+				handleDeath("\t... and DIED\n");
 				p = pIter.next();
 			} else {
-				for (int i = 0; i < players.size() - 1; i++)
-					pIter.next();
-				p = pIter.next();
-				looseLife(p, "\n\t" + p.name + " lost a life", WHITE);
-				handleDeath(p, "... and DIED\n");
-				for (int i = players.size() - 1; i > 0; i--) // >= ??
-					pIter.previous();
-				p = pIter.previous();
+				for (int i = 0; i < players.size() - 2; i++) // go to penultimate index
+					pIter.next(); 
+				p = pIter.next(); // last index
+
+				looseLife("\n\t" + p.name + " lost a life\n", RED);
+				handleDeath("\t... and DIED\n");
+
+				for (int i = players.size() - 1; i > 0; i--) // go back to the second index
+					pIter.previous(); 
+				p = pIter.previous(); // first index
 			}
 			newRound = true;
 		}
@@ -212,24 +212,22 @@ public class OfflineGame {
 	public static void main(String[] args) {
 		OfflineGame game = new OfflineGame();
 
-		//System.out.println("😂");
-		List<Integer> l = Arrays.asList(0,1,2,3,4);
-		ListIterator<Integer> li;
-		int c = 0;
-
 		/*
-		//while (c < 3) {
-			li = l.listIterator();
-			for (int i = 0; i < l.size(); i++)
-				System.out.println(li.next());
-			//c++;
-		//}
+		List<Integer> l = List.of(0,1,2,3,4);
+		ListIterator<Integer> li = l.listIterator();
+		System.out.println(li.next());
+		Integer n;
+		for (int i = 0; i < l.size() - 2; i++)
+			li.next();
+		n = li.next();
+
+		System.out.println(n);
 		
-		li = l.listIterator();
-		System.out.println(li.next());
-		System.out.println(li.next());
-		System.out.println(li.previous());
-		System.out.println(li.previous());
+		for (int i = l.size() - 1; i > 0; i--)
+			li.previous();
+		n = li.previous();
+
+		System.out.println(n);
 		*/
 	}
 	
