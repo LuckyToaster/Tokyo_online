@@ -18,20 +18,63 @@ public class OfflineGame {
 	public static Scanner in;
 	private List<Player> players;
 	private ListIterator<Player> pIter;
-	private Dice dice;
 	private boolean newRound, believe;
+	private Dice dice;
 	private Player p;
 	private int deceitN;
 
 	public OfflineGame() {
+		in = new Scanner(System.in);
 		players = new ArrayList<>();
 		dice = new Dice();
-		in = new Scanner(System.in);
 		newRound = true;
 		deceitN = 0;
 
 		configure();
 		gameLoop();
+	}
+	
+
+	private void gameLoop() {
+		String beliefMsg = ", Do you believe ";
+		clearScreen();
+
+		while (players.size() > 1) {
+			pIter = players.listIterator();
+			while (pIter.hasNext()) {
+				p = pIter.next();
+				clearScreen();
+
+				if (newRound) {
+					dice.clearHistory();
+					dice.shake();
+					printStats(p, dice);
+					dice.draw();
+					newRound = false;
+				} else { 
+					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
+
+					handleTricked();
+					handleWrong();
+					handleOutwitted();
+
+					if (!newRound) {
+						dice.shake();
+						printStats(p, dice);
+						dice.draw();
+					}
+				}
+
+				handleDeath("\t" + p.name + " DIED");
+				if (handleWinner()) break;
+
+				if (!newRound) {
+					deceitN = getInt("\tWhat will you say?: ", in);
+					handleInvalidDeceitNumber(deceitN);
+					userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 2000);
+				} else userPrompt("\n\t 🎉🎉 🥳 NEW ROUND 💯💯", WHITE, 2000);
+			}
+		}
 	}
 
 	
@@ -80,86 +123,7 @@ public class OfflineGame {
 			instantiatePlayers(playerN, lives);
 		} 
 	}
-	
-	
-	private void gameLoop() {
-		String beliefMsg = ", Do you believe ";
-		clearScreen();
 
-		while (players.size() > 1) {
-			pIter = players.listIterator();
-
-			while (pIter.hasNext()) {
-				p = pIter.next();
-				clearScreen();
-
-				if (newRound) {
-					dice.clearHistory();
-					dice.shake();
-					printStats(p, dice);
-					dice.draw();
-					newRound = false;
-				} else { 
-					believe = getYesOrNo("\n\t" + p.name + beliefMsg + deceitN + "? > ", in);
-
-					handleTricked();
-					handleWrong();
-					handleOutwitted();
-
-					if (!newRound) {
-						dice.shake();
-						printStats(p, dice);
-						dice.draw();
-					}
-				}
-
-				handleDeath("\t" + p.name + " DIED");
-				if (handleWinner()) 
-					break;
-
-				if (!newRound) {
-					deceitN = getInt("\tWhat will you say?: ", in);
-					handleInvalidDeceitNumber(deceitN);
-					userPrompt("\n\t⏩⏩ 🤜PASS🤜 THE 🎲DIE🎲 ⏩⏩", WHITE, 2000);
-				} else userPrompt("\n\t 🎉🎉 🥳 NEW ROUND 💯💯", WHITE, 2000);
-			}
-		}
-	}
-	
-
-	private void looseLife(String msg) {
-		p.lives -= 1;
-		userPrompt(msg);
-	}
-	
-	private void looseLife(String msg, String color) {
-		p.lives -= 1;
-		userPrompt(msg, color);
-	}
-	
-	private void handleDeath (String msg) {
-		if (p.lives == 0) {
-			userPrompt(msg);
-			pIter.remove();
-			newRound = true;
-		}
-	}
-
-	private void handleInvalidDeceitNumber (int deceitN) {
-		if (!Dice.isValid(deceitN) || Dice.calcVal(deceitN) < dice.getVal() ) { 
-			userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
-			userPrompt("\n\t... -1 life\n", 300);
-			p.lives -= 1;
-			newRound = true;
-		} 
-	}
-
-	private boolean handleWinner() {
-		if (players.size() == 1) {
-			out.println("\n\n\t" + players.get(0).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
-			return true;
-		} else return false;
-	}
 	
 	/**
 	 * When the player believes a lie, he has to go along with the lie
@@ -177,8 +141,8 @@ public class OfflineGame {
 	private void handleWrong() {
 		if (!believe && dice.get() == deceitN) {
 			looseLife("\tYou lost a life");
-                        newRound = true;
-                }
+			newRound = true;
+		}
 	}
 	
 	/**
@@ -207,6 +171,39 @@ public class OfflineGame {
 		}
 	}
 	
+	private void handleInvalidDeceitNumber (int deceitN) {
+		if (!Dice.isValid(deceitN) || Dice.calcVal(deceitN) < dice.getVal() ) { 
+			userPrompt("\n\tThat number does not exist! 🤣🤣 ... ");
+			userPrompt("\n\t... -1 life\n", 300);
+			p.lives -= 1;
+			newRound = true;
+		} 
+	}
+
+	private boolean handleWinner() {
+		if (players.size() == 1) {
+			out.println("\n\n\t" + players.get(0).name + " 🗿 (chad) iS THE WINNER! 🎉🎉");
+			return true;
+		} else return false;
+	}
+
+	private void handleDeath (String msg) {
+		if (p.lives == 0) {
+			userPrompt(msg);
+			pIter.remove();
+			newRound = true;
+		}
+	}
+
+	private void looseLife(String msg) {
+		p.lives -= 1;
+		userPrompt(msg);
+	}
+	
+	private void looseLife(String msg, String color) {
+		p.lives -= 1;
+		userPrompt(msg, color);
+	}
 
 	public static void main(String[] args) {
 		OfflineGame game = new OfflineGame();
